@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DOCUMENT>
+  <!-- Title of the Plugin -->
+  <TITLE>Messages Plug-In</TITLE>
+  <!-- Small Description of the Plugin - What does it do? -->
+  <DESCRIPTION>Private Messaging Plugin that allows users to comunicate with each other privately.</DESCRIPTION>
+  <!-- Name of Plugin - This is how it is stored in the DB - No spaces or special characters -->
+  <NAME>Messages</NAME>
+  <!-- Let UserCany Dispenser know that this is a Plugin -->
+  <TYPE>plugin</TYPE>
+  <!-- Folder name where the Plugin is located - Normally same as Name -->
+  <FOLDER_LOCATION>Messages</FOLDER_LOCATION>
+  <!-- Let everyone know who created this Plugin -->
+  <AUTHOR>DaVaR</AUTHOR>
+  <!-- Current Release Version of this Plugin - Used to let others know when to update -->
+  <VERSION>1.0.0</VERSION>
+  <!-- Current Release Date of this Plugin -->
+  <RELEASE_DATE>9/2/2019</RELEASE_DATE>
+  <!-- Plugin Image URL to display with the Plugin in the Dispenser -->
+  <IMAGE>https://www.usercandy.com/UserCandyLogo.png</IMAGE>
+</DOCUMENT>
