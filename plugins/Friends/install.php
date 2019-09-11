@@ -9,22 +9,19 @@
 
 /** Add Data needed to Database **/
 $install_db_data[] = "
-  CREATE TABLE IF NOT EXISTS `".PREFIX."plugin_messages` (
-    `id` int(11) NOT NULL AUTO_INCREMENT,
-    `to_userID` int(11) DEFAULT NULL,
-    `from_userID` int(11) DEFAULT NULL,
-    `subject` varchar(255) DEFAULT NULL,
-    `content` text DEFAULT NULL,
-    `date_read` datetime DEFAULT NULL,
-    `date_sent` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `to_delete` varchar(5) NOT NULL DEFAULT 'false',
-    `from_delete` varchar(5) NOT NULL DEFAULT 'false',
-    PRIMARY KEY (`id`)
-  ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+CREATE TABLE IF NOT EXISTS `".PREFIX."plugin_friends` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uid1` int(15) DEFAULT NULL,
+  `uid2` int(15) DEFAULT NULL,
+  `status1` varchar(4) NOT NULL DEFAULT '0',
+  `status2` varchar(4) NOT NULL DEFAULT '0',
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 ";
 
 /** Setup Plugin Page Permissions **/
-$folder_location = "Messages";
+$folder_location = "Friends";
 $arguments = "(:any)/(:any)/(:any)/(:any)";
 $plugin_display_page = CUSTOMDIR.'plugins/'.$folder_location.'/display.php';
 if(!file_exists($plugin_display_page)){
