@@ -27,6 +27,7 @@ $install_db_data[] = "
 $folder_location = "Messages";
 $arguments = "(:any)/(:any)/(:any)/(:any)";
 $plugin_display_page = CUSTOMDIR.'plugins/'.$folder_location.'/display.php';
+$sitemap = "false";
 if(!file_exists($plugin_display_page)){
   $plugin_display_page = CUSTOMDIR.'plugins/'.$folder_location.'/'.$folder_location.'.php';
 }
@@ -35,7 +36,7 @@ if(file_exists($plugin_display_page)){
   /** Check to see if Plugin is already in Pages **/
   if(!$AdminPanelModel->checkPagesURL($folder_location)){
     /** Add Page to Database */
-    if($page_id = $AdminPanelModel->addPluginPage('plugins/'.$folder_location, $folder_location, $folder_location, $arguments)){
+    if($page_id = $AdminPanelModel->addPluginPage('plugins/'.$folder_location, $folder_location, $folder_location, $arguments, $sitemap)){
       /** New Page added to database.  Let Admin Know it was added */
       $new_pages[] = "<b>URL: ".$folder_location."</b> (Plugin - ".$folder_location.")<Br>";
       /** Add new permission for the page and set as public */
@@ -43,6 +44,9 @@ if(file_exists($plugin_display_page)){
       $AdminPanelModel->addPagePermission($page_id, '2');
       $AdminPanelModel->addPagePermission($page_id, '3');
       $AdminPanelModel->addPagePermission($page_id, '4');
+      /** Add Settings to Global site settings **/
+      $AdminPanelModel->updateSetting('messages_pageinator_limit', '20');
+      $AdminPanelModel->updateSetting('messages_quota_limit', '50');
       /** New Route added to database.  Add to site Links */
       if($AdminPanelModel->addSiteLink($folder_location, $folder_location, $folder_location." - ".$folder_location, 'header_main', '0', '')){
         /** Success */

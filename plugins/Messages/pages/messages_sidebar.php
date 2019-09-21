@@ -12,7 +12,7 @@ $data['new_messages_inbox'] = $MessagesModel->getUnreadMessages($u_id);
 
 ?>
 
-<div class='col-lg-3 col-md-4 pr-0'>
+<div class='col-lg-3 col-md-4'>
   <div class='card mb-3'>
     <div class='card-header h4'>
       Private Messages

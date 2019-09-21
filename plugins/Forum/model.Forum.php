@@ -1,0 +1,1421 @@
+<?php
+/**
+* UserCandy Forum Models Plugin
+*
+* UserCandy - Messages Plugin
+* @author David (DaVaR) Sargent <davar@usercandy.com>
+* @version 1.0.0
+*/
+
+class Forum extends Models {
+
+  /**
+   * globalForumSetting
+   *
+   * get setting for requested setting.
+   *
+   * @param $action which setting to get
+   *
+   * @return string returns requested setting
+   */
+  public function globalForumSetting($action){
+    $data = $this->db->select("
+      SELECT setting_value
+      FROM ".PREFIX."plugin_forum_settings
+      WHERE setting_title = :action
+      LIMIT 1
+    ",
+    array(':action' => $action));
+    return $data[0]->setting_value;
+  }
+
+  /**
+   * forum_categories
+   *
+   * get list of all enabled forum categories.
+   *
+   * @return array returns all categories
+   */
+  public function forum_categories(){
+    $data = $this->db->select("
+        SELECT
+          *
+        FROM
+          ".PREFIX."plugin_forum_cat
+        WHERE
+          forum_name = 'forum'
+        GROUP BY
+          forum_title
+        ORDER BY
+          forum_order_title
+        ASC
+        ");
+    return $data;
+  }
+
+  /**
+   * forum_titles
+   *
+   * get list of all enabled forum titles.
+   *
+   * @return array returns all titles
+   */
+    public function forum_titles(){
+      $data = $this->db->select("
+          SELECT
+            a.*,
+            COUNT(DISTINCT t.forum_post_id) AS total_topics_display,
+            COUNT(DISTINCT r.id) AS total_topic_replys_display
+          FROM
+            ".PREFIX."plugin_forum_cat AS a
+          LEFT OUTER JOIN
+            ".PREFIX."plugin_forum_posts AS t
+            ON a.forum_id = t.forum_id
+          LEFT OUTER JOIN
+            ".PREFIX."plugin_forum_post_replies AS r
+            ON a.forum_id = r.fpr_id
+          WHERE
+            a.forum_name = 'forum'
+          GROUP BY
+            a.forum_id
+          ORDER BY
+            a.forum_order_cat
+          ASC
+          ");
+      return $data;
+    }
+
+    /**
+     * forum_recent_posts
+     *
+     * get list of all recent posts in forum ordered by date.
+     *
+     * @return array returns all recent forum posts
+     */
+    public function forum_recent_posts($limit = "10"){
+      $data = $this->db->select("
+          SELECT
+              fp.forum_post_id as forum_post_id, fp.forum_id as forum_id,
+              fp.forum_user_id as forum_user_id, fp.forum_title as forum_title,
+              fp.forum_url as forum_url,
+              fp.forum_edit_date as forum_edit_date,
+              fp.forum_timestamp as forum_timestamp, fpr.id as id,
+              fpr.fpr_post_id as fpr_post_id, fpr.fpr_id as fpr_id,
+              fpr.fpr_user_id as fpr_user_id,
+              fpr.fpr_edit_date as fpr_edit_date,
+              fpr.fpr_timestamp as fpr_timestamp,
+              GREATEST(fp.forum_timestamp, COALESCE(fpr.fpr_timestamp, '00-00-00 00:00:00')) AS tstamp
+              FROM ".PREFIX."plugin_forum_posts fp
+              LEFT JOIN ".PREFIX."plugin_forum_post_replies fpr
+              ON fp.forum_post_id = fpr.fpr_post_id
+              WHERE fp.allow = 'TRUE'
+              AND ((fp.forum_publish = '1' AND fpr.forum_publish = '1') OR fp.forum_publish = '1' OR fpr.forum_publish = '1')
+          ORDER BY tstamp DESC
+          LIMIT $limit
+      ");
+      return $data;
+    }
+
+    /**
+     * forum_cat
+     *
+     * get category data for current topic (Category)
+     *
+     * @param int $where_id = forum_id
+     *
+     * @return string returns forum category data (forum_cat)
+     */
+    public function forum_cat($where_id){
+      $data = $this->db->select("
+        SELECT forum_cat
+        FROM ".PREFIX."plugin_forum_cat
+        WHERE forum_id = :where_id
+        LIMIT 1
+      ",
+      array(':where_id' => $where_id));
+      return $data[0]->forum_cat;
+    }
+
+    /**
+     * forum_cat_des
+     *
+     * get category data for current topic (Description)
+     *
+     * @param int $where_id = forum_id
+     *
+     * @return string returns forum category data (forum_des)
+     */
+    public function forum_cat_des($where_id){
+      $data = $this->db->select("
+        SELECT forum_des
+        FROM ".PREFIX."plugin_forum_cat
+        WHERE forum_id = :where_id
+        LIMIT 1
+      ",
+      array(':where_id' => $where_id));
+      return $data[0]->forum_des;
+    }
+
+    /**
+     * forum_title
+     *
+     * get category data for current topic (Title)
+     *
+     * @param int $where_id = forum_id
+     *
+     * @return string returns forum category data (forum_title)
+     */
+    public function forum_title($where_id){
+      $data = $this->db->select("
+        SELECT forum_title
+        FROM ".PREFIX."plugin_forum_cat
+        WHERE forum_id = :where_id
+        LIMIT 1
+      ",
+      array(':where_id' => $where_id));
+      return $data[0]->forum_title;
+    }
+
+    /**
+     * forum_topics
+     *
+     * get list of topics for given category
+     *
+     * @param int $where_id = forum_id
+     * @param string $limit data from Paginator class
+     *
+     * @return array returns forum topics list data
+     */
+    public function forum_topics($where_id, $limit = null){
+      $data = $this->db->select("
+        SELECT
+            sub1.*,
+            fpr_post_id,
+            fpr_user_id AS LR_UserID,
+            fpr_timestamp AS LR_TimeStamp,
+            COUNT(fpr_post_id) AS total_topic_replys
+        FROM (
+            SELECT sub2.* FROM (
+                SELECT
+                    fp.forum_post_id as forum_post_id, fp.forum_id as forum_id,
+                    fp.forum_user_id as forum_user_id, fp.forum_title as forum_title,
+                    fp.forum_url as forum_url,
+                    fp.forum_edit_date as forum_edit_date,
+                    fp.forum_timestamp as forum_timestamp,
+                    fp.forum_status as forum_status, fpr.id as id,
+                    fpr.fpr_post_id as fpr_post_id, fpr.fpr_id as fpr_id,
+                    fpr.fpr_user_id as fpr_user_id,
+                    fpr.fpr_edit_date as fpr_edit_date,
+                    fpr.fpr_timestamp as fpr_timestamp,
+                    GREATEST(fp.forum_timestamp, COALESCE(fpr.fpr_timestamp, '00-00-00 00:00:00')) AS tstamp
+                    FROM ".PREFIX."plugin_forum_posts fp
+                    LEFT JOIN ".PREFIX."plugin_forum_post_replies fpr
+                    ON fp.forum_post_id = fpr.fpr_post_id
+                    WHERE forum_id = :where_id
+                    AND fp.allow = 'TRUE'
+                    AND ((fp.forum_publish = '1' AND fpr.forum_publish = '1') OR fp.forum_publish = '1' OR fpr.forum_publish = '1')
+            ) sub2
+                ORDER BY tstamp DESC
+        ) sub1
+            GROUP BY forum_post_id
+            ORDER BY tstamp DESC
+            $limit
+      ",
+      array(':where_id' => $where_id));
+      return $data;
+    }
+
+    /**
+     * forum_topic_cat_id
+     *
+     * get category ID that Topic is related to
+     *
+     * @param int $where_id = forum_post_id
+     *
+     * @return string returns forum category data (forum_id)
+     */
+    public function forum_topic_cat_id($where_id){
+      $data = $this->db->select("
+        SELECT forum_id
+        FROM ".PREFIX."plugin_forum_posts
+        WHERE forum_post_id = :where_id
+        LIMIT 1
+      ",
+      array(':where_id' => $where_id));
+      return $data[0]->forum_id;
+    }
+
+    /**
+     * get Topic ID based on URL request
+     * @param string $forum_url
+     * @return int data
+     */
+    public function get_topic_url_id($forum_url){
+      $data = $this->db->select("
+        SELECT forum_post_id
+        FROM ".PREFIX."plugin_forum_posts
+        WHERE forum_url = :forum_url
+        LIMIT 1
+      ",
+      array(':forum_url' => $forum_url));
+      return $data[0]->forum_post_id;
+    }
+
+    /**
+     * get Topic ID based on URL request
+     * @param string $forum_url
+     * @param int $id
+     * @return int data
+     */
+    public function get_topic_url($forum_url, $id){
+      $data = $this->db->select("
+        SELECT forum_post_id
+        FROM ".PREFIX."plugin_forum_posts
+        WHERE forum_url = :forum_url
+        AND NOT forum_post_id = :forum_post_id
+        LIMIT 1
+      ",
+      array(':forum_url' => $forum_url, ':forum_post_id' => $id));
+      return $data[0]->forum_post_id;
+    }
+
+    /**
+     * topic_title
+     *
+     * get Topic Title for header
+     *
+     * @param int $where_id = forum_post_id
+     *
+     * @return string returns forum topic data (forum_title)
+     */
+    public function topic_title($where_id){
+      $data = $this->db->select("
+        SELECT forum_title
+        FROM ".PREFIX."plugin_forum_posts
+        WHERE forum_post_id = :where_id
+        LIMIT 1
+      ",
+      array(':where_id' => $where_id));
+      return $data[0]->forum_title;
+    }
+
+    /**
+     * topic_creator
+     *
+     * get Topic Creator userID
+     *
+     * @param int $where_id = forum_post_id
+     *
+     * @return string returns forum topic data (forum_user_id)
+     */
+    public function topic_creator($where_id){
+      $data = $this->db->select("
+        SELECT forum_user_id
+        FROM ".PREFIX."plugin_forum_posts
+        WHERE forum_post_id = :where_id
+        LIMIT 1
+      ",
+      array(':where_id' => $where_id));
+      return $data[0]->forum_user_id;
+    }
+
+    /**
+     * topic_date
+     *
+     * get Topic timestamp for age
+     *
+     * @param int $where_id = forum_post_id
+     *
+     * @return string returns forum topic data (forum_timestamp)
+     */
+    public function topic_date($where_id){
+      $data = $this->db->select("
+        SELECT forum_timestamp
+        FROM ".PREFIX."plugin_forum_posts
+        WHERE forum_post_id = :where_id
+        LIMIT 1
+      ",
+      array(':where_id' => $where_id));
+      return $data[0]->forum_timestamp;
+    }
+
+    /**
+     * topic_content
+     *
+     * get Topic Content data
+     *
+     * @param int $where_id = forum_post_id
+     *
+     * @return string returns forum topic data (forum_content)
+     */
+    public function topic_content($where_id){
+      $data = $this->db->select("
+        SELECT forum_content
+        FROM ".PREFIX."plugin_forum_posts
+        WHERE forum_post_id = :where_id
+        LIMIT 1
+      ",
+      array(':where_id' => $where_id));
+      return $data[0]->forum_content;
+    }
+
+    /**
+     * topic_edit_date
+     *
+     * get Topic Content last edit date for age
+     *
+     * @param int $where_id = forum_post_id
+     *
+     * @return string returns forum topic data (forum_edit_date)
+     */
+    public function topic_edit_date($where_id){
+      $data = $this->db->select("
+        SELECT forum_edit_date
+        FROM ".PREFIX."plugin_forum_posts
+        WHERE forum_post_id = :where_id
+        LIMIT 1
+      ",
+      array(':where_id' => $where_id));
+      return $data[0]->forum_edit_date;
+    }
+
+    /**
+     * topic_userID
+     *
+     * get Topic Content owner userID
+     *
+     * @param int $where_id = forum_post_id
+     *
+     * @return string returns forum topic data (forum_user_id)
+     */
+    public function topic_userID($where_id){
+      $data = $this->db->select("
+        SELECT forum_user_id
+        FROM ".PREFIX."plugin_forum_posts
+        WHERE forum_post_id = :where_id
+        LIMIT 1
+      ",
+      array(':where_id' => $where_id));
+      return $data[0]->forum_user_id;
+    }
+
+    /**
+     * topic_status
+     *
+     * get Topic Status (Locked = 2 or Open = 1)
+     *
+     * @param int $where_id = forum_post_id
+     *
+     * @return string returns forum topic data (forum_status)
+     */
+    public function topic_status($where_id){
+      $data = $this->db->select("
+        SELECT forum_status
+        FROM ".PREFIX."plugin_forum_posts
+        WHERE forum_post_id = :where_id
+        LIMIT 1
+      ",
+      array(':where_id' => $where_id));
+      return $data[0]->forum_status;
+    }
+
+    /**
+     * topic_allow
+     *
+     * get Topic Allowed Status (TRUE = show | FALSE = hide)
+     *
+     * @param int $where_id = forum_post_id
+     *
+     * @return string
+     */
+    public function topic_allow($where_id){
+      $data = $this->db->select("
+        SELECT allow
+        FROM ".PREFIX."plugin_forum_posts
+        WHERE forum_post_id = :where_id
+        LIMIT 1
+      ",
+      array(':where_id' => $where_id));
+      return $data[0]->allow;
+    }
+
+    /**
+     * topic_hidden_userID
+     *
+     * get Topic hidden userID
+     *
+     * @param int $where_id = forum_post_id
+     *
+     * @return int
+     */
+    public function topic_hidden_userID($where_id){
+      $data = $this->db->select("
+        SELECT hide_userID
+        FROM ".PREFIX."plugin_forum_posts
+        WHERE forum_post_id = :where_id
+        LIMIT 1
+      ",
+      array(':where_id' => $where_id));
+      return $data[0]->hide_userID;
+    }
+
+    /**
+     * topic_hidden_reason
+     *
+     * get Topic Hidden Reason
+     *
+     * @param int $where_id = forum_post_id
+     *
+     * @return string
+     */
+    public function topic_hidden_reason($where_id){
+      $data = $this->db->select("
+        SELECT hide_reason
+        FROM ".PREFIX."plugin_forum_posts
+        WHERE forum_post_id = :where_id
+        LIMIT 1
+      ",
+      array(':where_id' => $where_id));
+      return $data[0]->hide_reason;
+    }
+
+    /**
+     * topic_hidden_timestamp
+     *
+     * get Topic Hidden DateTime
+     *
+     * @param int $where_id = forum_post_id
+     *
+     * @return string
+     */
+    public function topic_hidden_timestamp($where_id){
+      $data = $this->db->select("
+        SELECT hide_timestamp
+        FROM ".PREFIX."plugin_forum_posts
+        WHERE forum_post_id = :where_id
+        LIMIT 1
+      ",
+      array(':where_id' => $where_id));
+      return $data[0]->hide_timestamp;
+    }
+
+    /**
+     * forum_topic_replys
+     *
+     * get list of topic replies for given topic
+     *
+     * @param int $where_id = fpr_post_id
+     * @param string $limit data from Paginator class
+     *
+     * @return array returns forum topic reply list data
+     */
+    public function forum_topic_replys($where_id, $limit = null){
+      $data = $this->db->select("
+        SELECT
+          *
+        FROM
+          ".PREFIX."plugin_forum_post_replies
+        WHERE
+          fpr_post_id = :where_id
+        AND
+          forum_publish = '1'
+        ORDER BY
+          id
+        ASC
+        $limit
+      ",
+      array(':where_id' => $where_id));
+      return $data;
+    }
+
+    /**
+     * getTotalReplys
+     *
+     * get total count of topic replys for topic
+     *
+     * @param int $where_id = fpr_post_id
+     *
+     * @return int returns forum topic reply count
+     */
+    public function getTotalReplys($where_id){
+      $data = $this->db->selectCount("
+        SELECT
+          *
+        FROM
+          ".PREFIX."plugin_forum_post_replies
+        WHERE
+          fpr_post_id = :where_id
+        AND
+          forum_publish = '1'
+        ORDER BY
+          id
+        ASC
+      ",
+      array(':where_id' => $where_id));
+      return $data;
+    }
+
+    /**
+     * sendTopic
+     *
+     * create new topic
+     *
+     * @param int $forum_user_id Current user's ID
+     * @param int $forum_id Current Category's ID
+     * @param string $forum_title New topic's title
+     * @param string $forum_content New topic's content
+     *
+     * @return booleen true/false
+     */
+    public function sendTopic($forum_user_id, $forum_id, $forum_title, $forum_content, $forum_publish = "0"){
+      /** Generate URL based on title **/
+      $forum_url = Url::generateSafeSlug($forum_title);
+      /** Check to see if URL already exsist **/
+      if(SELF::get_topic_url_id($forum_url)){
+        $rand_string = mt_rand(1, 99);
+        $forum_url = $forum_url."-rn".$rand_string;
+      }
+      /** Add to Forum Posts **/
+      $query = $this->db->insert(PREFIX.'plugin_forum_posts', array('forum_id' => $forum_id, 'forum_user_id' => $forum_user_id, 'forum_title' => $forum_title, 'forum_url' => $forum_url, 'forum_content' => $forum_content, 'forum_publish' => $forum_publish));
+      $last_insert_id = $this->db->lastInsertId('forum_post_id');
+      $query_track = $this->db->insert(PREFIX.'plugin_forum_post_tracker', array('forum_post_id' => $last_insert_id));
+      $count = $query + $query_track;
+      // Check to make sure Topic was Created
+      if($count > 0){
+          // Run post count group checker
+          self::newMemberPostsChecker($forum_user_id);
+        return $last_insert_id;
+      }else{
+        return false;
+      }
+    }
+
+    /**
+     * sendNewImage
+     *
+     * add uploaded image to database
+     *
+     * @param in $user_id
+     * @param string $imageName
+     * @param string $imageLocation
+     * @param int $imageSize
+     * @param int $forumID
+     * @param int $forumTopicID
+     * @param int $forumTopicReplyID
+     *
+     * @return booleen true/false
+     */
+    public function sendNewImage($user_id, $imageName, $imageLocation, $imageSize, $forumID, $forumTopicID, $forumTopicReplyID = null){
+      // Update forum images table
+      $query = $this->db->insert(PREFIX.'plugin_forum_images', array('user_id' => $user_id, 'imageName' => $imageName, 'imageLocation' => $imageLocation, 'imageSize' => $imageSize, 'forumID' => $forumID, 'forumTopicID' => $forumTopicID, 'forumTopicReplyID' => $forumTopicReplyID));
+      // Check to make sure row was inserted
+      if($query > 0){
+        return true;
+      }else{
+        return false;
+      }
+    }
+
+    /**
+     * getForumImagesTopic
+     *
+     * get topic images
+     *
+     * @param int $id
+     *
+     * @return string returns image url
+     */
+    public function getForumImagesTopic($topic_id){
+      $data = $this->db->select("
+        SELECT imageName, imageLocation
+        FROM ".PREFIX."plugin_forum_images
+        WHERE forumTopicID = :topic_id
+        AND forumTopicReplyID IS NULL
+      ",
+      array(':topic_id' => $topic_id));
+      return $data;
+    }
+
+    /**
+     * updateTopic
+     *
+     * edit/update topic
+     *
+     * @param int $id Current Topic's ID
+     * @param string $forum_title Topic's title
+     * @param string $forum_content Topic's content
+     *
+     * @return booleen true/false
+     */
+    public function updateTopic($id, $forum_title, $forum_content){
+      /** Generate URL based on title **/
+      $forum_url = Url::generateSafeSlug($forum_title);
+      /** Check to see if URL already exsist **/
+      if(SELF::get_topic_url($forum_url, $id)){
+        $forum_url = $forum_url."-".$id;
+      }
+      /** Update the Forum Post **/
+      $query = $this->db->update(PREFIX.'plugin_forum_posts', array('forum_title' => $forum_title, 'forum_content' => $forum_content, 'forum_url' => $forum_url, 'forum_edit_date' => date('Y-m-d H:i:s')), array('forum_post_id' => $id));
+      // Check to make sure Topic was Created
+      if($query > 0){
+        return true;
+      }else{
+        return false;
+      }
+    }
+
+    /**
+     * topic_is_published
+     *
+     * check if Forum topic is published
+     *
+     * @param int $where_id = forum_post_id
+     *
+     * @return string returns forum topic data (forum_publish)
+     */
+    public function topic_is_published($where_id){
+      $data = $this->db->select("
+        SELECT forum_publish
+        FROM ".PREFIX."plugin_forum_posts
+        WHERE forum_post_id = :where_id
+        LIMIT 1
+      ",
+      array(':where_id' => $where_id));
+      return $data[0]->forum_publish;
+    }
+
+    /**
+     * updateSavedTopic
+     *
+     * edit/update saved topic
+     *
+     * @param int $id Current Topic's ID
+     * @param string $forum_title Topic's title
+     * @param string $forum_content Topic's content
+     *
+     * @return booleen true/false
+     */
+    public function updateSavedTopic($id, $forum_title, $forum_content, $forum_publish = "0"){
+      /** Generate URL based on title **/
+      $forum_url = Url::generateSafeSlug($forum_title);
+      /** Check to see if URL already exsist **/
+      if(SELF::get_topic_url($forum_url, $id)){
+        $rand_string = mt_rand(1, 99);
+        $forum_url = $forum_url."-rn".$rand_string;
+      }
+      // Check to see if Topic is already published.  If so then block edits.
+      $is_published = SELF::topic_is_published($id);
+      if($is_published == "0"){
+        // Update messages table
+        $query = $this->db->update(PREFIX.'plugin_forum_posts', array('forum_title' => $forum_title, 'forum_content' => $forum_content, 'forum_publish' => $forum_publish, 'forum_timestamp' => date('Y-m-d H:i:s')), array('forum_post_id' => $id));
+        // Check to make sure Topic was Created
+        if($query > 0){
+          return true;
+        }else{
+          return false;
+        }
+      }else{
+        return false;
+      }
+    }
+
+    /**
+     * getTotalOwner
+     *
+     * get topic owner's user ID
+     *
+     * @param int $where_id = forum_post_id
+     *
+     * @return string returns forum topic data (forum_user_id)
+     */
+    public function getTopicOwner($where_id){
+      $data = $this->db->select("
+        SELECT forum_user_id
+        FROM ".PREFIX."plugin_forum_posts
+        WHERE forum_post_id = :where_id
+        LIMIT 1
+      ",
+      array(':where_id' => $where_id));
+      return $data[0]->forum_user_id;
+    }
+
+    /**
+     * sendTopicReply
+     *
+     * create new topic reply
+     *
+     * @param int $fpr_user_id Current user ID
+     * @param int $fpr_post_id Current Category ID
+     * @param int $fpr_id Current Topic ID
+     * @param string $forum_content New Reply's Content
+     *
+     * @return booleen/int ID or false
+     */
+    public function sendTopicReply($fpr_user_id, $fpr_post_id, $fpr_id, $fpr_content, $subscribe, $forum_publish = "1", $afpr_post_id = ""){
+      // Check for email subscription status
+      if($subscribe == true){$subscribe = "true";}else{$subscribe = "false";}
+      if(!empty($afpr_post_id)){
+        // Update Reply
+        $query = $this->db->update(PREFIX.'plugin_forum_post_replies', array('fpr_content' => $fpr_content, 'fpr_timestamp' => date('Y-m-d H:i:s'), 'forum_publish' => '1'), array('id' => $afpr_post_id));
+        $last_insert_id = true;
+      }else{
+        // Insert Reply
+        $query = $this->db->insert(PREFIX.'plugin_forum_post_replies', array('fpr_post_id' => $fpr_post_id, 'fpr_user_id' => $fpr_user_id, 'fpr_id' => $fpr_id, 'fpr_content' => $fpr_content, 'subscribe_email' => $subscribe, 'forum_publish' => $forum_publish, 'fpr_timestamp' => date("Y-m-d H:i:s")));
+        $last_insert_id = $this->db->lastInsertId('id');
+      }
+      $query_track = $this->db->insert(PREFIX.'plugin_forum_post_tracker', array('forum_post_id' => $fpr_post_id, 'forum_reply_id' => $last_insert_id));
+      $count = $query + $query_track;
+      // Check to make sure Topic was Created
+      if($count > 0){
+        // Run post count group checker
+        self::newMemberPostsChecker($fpr_user_id);
+        return $last_insert_id;
+      }else{
+        return false;
+      }
+    }
+
+    /**
+     * lastTopicReplyID
+     *
+     * get last topic reply inserted ID
+     *
+     * @param int $where_id = fpr_post_id
+     *
+     * @return string returns forum topic reply data (id)
+     */
+    public function lastTopicReplyID($where_id){
+      $data = $this->db->select("
+        SELECT id
+        FROM ".PREFIX."plugin_forum_post_replies
+        WHERE fpr_post_id = :where_id
+        ORDER BY id DESC
+        LIMIT 1
+      ",
+      array(':where_id' => $where_id));
+      return $data[0]->id;
+    }
+
+    /**
+     * updateTopicReply
+     *
+     * edit topic reply
+     *
+     * @param int $id Current Topic ID
+     * @param string $fpr_content New Reply's Content
+     *
+     * @return booleen true/false
+     */
+    public function updateTopicReply($id, $fpr_content, $userID){
+      // Update messages table
+      $query = $this->db->update(PREFIX.'plugin_forum_post_replies', array('fpr_content' => $fpr_content, 'fpr_edit_date' => date('Y-m-d H:i:s')), array('id' => $id, 'fpr_user_id' => $userID));
+      // Check to make sure Topic was Created
+      if($query > 0){
+        return true;
+      }else{
+        return false;
+      }
+    }
+
+    /**
+     * updateTopicReplySavedReply
+     *
+     * edit topic reply
+     *
+     * @param int $id Current Topic ID
+     * @param string $fpr_content New Reply's Content
+     *
+     * @return booleen true/false
+     */
+    public function updateSavedTopicReply($id, $fpr_content){
+      // Check to see if Topic is already published.  If so then block edits.
+      $is_published = SELF::topic_reply_is_published($id);
+      if($is_published == "0"){
+        // Update forum post reply
+        $query = $this->db->update(PREFIX.'plugin_forum_post_replies', array('fpr_content' => $fpr_content, 'fpr_timestamp' => date('Y-m-d H:i:s')), array('id' => $id));
+        // Check to make sure Topic was Created
+        if($query > 0){
+          return true;
+        }else{
+          return false;
+        }
+      }else{
+        return false;
+      }
+    }
+
+    /**
+     * topic_reply_is_published
+     *
+     * check if forum reply is published
+     *
+     * @param int $where_id = id
+     *
+     * @return string returns forum reply data (forum_publish)
+     */
+    public function topic_reply_is_published($where_id){
+      $data = $this->db->select("
+        SELECT forum_publish
+        FROM ".PREFIX."plugin_forum_post_replies
+        WHERE id = :where_id
+        LIMIT 1
+      ",
+      array(':where_id' => $where_id));
+      return $data[0]->forum_publish;
+    }
+
+    /**
+     * getReplyContent
+     *
+     * get content for selected forum topic reply
+     *
+     * @param int $where_id = id
+     *
+     * @return array returns forum topic reply
+     */
+    public function getReplyContent($where_id){
+      $data = $this->db->select("
+        SELECT
+          fpr_content
+        FROM
+          ".PREFIX."plugin_forum_post_replies
+        WHERE
+          id = :where_id
+        AND
+          forum_publish = '0'
+      ",
+      array(':where_id' => $where_id));
+      return $data[0]->fpr_content;
+    }
+
+    /**
+     * getReplyOwner
+     *
+     * get topic reply owner user ID
+     *
+     * @param int $where_id = id
+     *
+     * @return string returns forum topic reply data (fpr_user_id)
+     */
+    public function getReplyOwner($where_id){
+      $data = $this->db->select("
+        SELECT fpr_user_id
+        FROM ".PREFIX."plugin_forum_post_replies
+        WHERE id = :where_id
+        LIMIT 1
+      ",
+      array(':where_id' => $where_id));
+      return $data[0]->fpr_user_id;
+    }
+
+    /**
+     * updateTopicLockStatus
+     *
+     * edit topic lock/unlock status
+     *
+     * @param int $id Current Topic ID
+     * @param int $setting (1)Open (2)Locked
+     *
+     * @return booleen true/false
+     */
+    public function updateTopicLockStatus($id, $setting){
+      // Update messages table
+      $query = $this->db->update(PREFIX.'plugin_forum_posts', array('forum_status' => $setting), array('forum_post_id' => $id));
+      // Check to make sure Topic was Created
+      if($query){
+        return true;
+      }else{
+        return false;
+      }
+    }
+
+    /**
+     * updateTopicHideStatus
+     *
+     * edit topic hide/unhide status
+     *
+     * @param int $id Current Topic ID
+     * @param int $setting (FALSE)Show (TRUE)Hide
+     * @param int $user_id
+     * @param string $reason
+     *
+     * @return booleen true/false
+     */
+    public function updateTopicHideStatus($id, $setting, $user_id = "0", $reason = ""){
+      // Update messages table
+      $current_datetime = date("Y-m-d H:i:s");
+      $query = $this->db->update(PREFIX.'plugin_forum_posts', array('allow' => $setting, 'hide_userID' => $user_id, 'hide_reason' => $reason, 'hide_timestamp' => $current_datetime), array('forum_post_id' => $id));
+      // Check to make sure Topic was Created
+      if($query > 0){
+        return true;
+      }else{
+        return false;
+      }
+    }
+
+    /**
+     * updateReplyHideStatus
+     *
+     * edit topic reply hide/unhide status
+     *
+     * @param int $id Current Topic Reply ID
+     * @param int $setting (FALSE)Show (TRUE)Hide
+     * @param int $user_id
+     * @param string $reason
+     *
+     * @return booleen true/false
+     */
+    public function updateReplyHideStatus($id, $setting, $user_id = "0", $reason = ""){
+      // Update messages table
+      $current_datetime = date("Y-m-d H:i:s");
+      $query = $this->db->update(PREFIX.'plugin_forum_post_replies', array('allow' => $setting, 'hide_userID' => $user_id, 'hide_reason' => $reason, 'hide_timestamp' => $current_datetime), array('id' => $id));
+      // Check to make sure Topic was Created
+      if($query > 0){
+        return true;
+      }else{
+        return false;
+      }
+    }
+
+    /**
+     * checkUserPosted
+     *
+     * checks if current user has posted to topic
+     *
+     * @param int $post_id = current topic ID
+     * @param int $userID = current user ID
+     *
+     * @return boolean has user posted (true/false)
+     */
+    public function checkUserPosted($post_id, $user_id){
+      $data = $this->db->selectCount("
+      SELECT * FROM (
+  			 (
+  			 SELECT fpr_post_id, fpr_user_id
+  			 FROM ".PREFIX."plugin_forum_post_replies
+  			 WHERE fpr_post_id = :post_id
+  			 AND fpr_user_id = :user_id
+  			 )
+  			 UNION ALL
+  			 (
+  			 SELECT forum_post_id, forum_user_id
+  			 FROM ".PREFIX."plugin_forum_posts
+  			 WHERE forum_post_id = :post_id
+  			 AND forum_user_id = :user_id
+  			 )
+  		) AS uniontable
+      ",
+      array(':post_id' => $post_id, ':user_id' => $user_id));
+      if($data > 0){
+        return true;
+      }else {
+        return false;
+      }
+    }
+
+    /**
+     * checkTopicSubscribe
+     *
+     * checks if current user is subscribed to topic
+     *
+     * @param int $post_id = current topic ID
+     * @param int $userID = current user ID
+     *
+     * @return boolean is user subscribed (true/false)
+     */
+    public function checkTopicSubscribe($post_id, $user_id){
+      $data = $this->db->selectCount("
+      SELECT * FROM (
+  			 (
+  			 SELECT fpr_post_id, fpr_user_id, subscribe_email
+  			 FROM ".PREFIX."plugin_forum_post_replies
+  			 WHERE fpr_post_id = :post_id
+  			 AND fpr_user_id = :user_id
+         AND subscribe_email = 'true'
+  			 )
+  			 UNION ALL
+  			 (
+  			 SELECT forum_post_id, forum_user_id, subscribe_email
+  			 FROM ".PREFIX."plugin_forum_posts
+  			 WHERE forum_post_id = :post_id
+  			 AND forum_user_id = :user_id
+         AND subscribe_email = 'true'
+  			 )
+  		) AS uniontable
+      ",
+      array(':post_id' => $post_id, ':user_id' => $user_id));
+      if($data > 0){
+        return true;
+      }else {
+        return false;
+      }
+    }
+
+    /**
+     * updateTopicSubcrition
+     *
+     * edit user's topic subcrition status (true/false)
+     *
+     * @param int $id Current Topic ID
+     * @param int $user_id
+     * @param int $setting (1)Open (2)Locked
+     *
+     * @return booleen true/false
+     */
+    public function updateTopicSubcrition($id, $user_id, $setting){
+      // Update messages table
+      $query_a = $this->db->update(PREFIX.'plugin_forum_posts', array('subscribe_email' => $setting), array('forum_post_id' => $id, 'forum_user_id' => $user_id));
+      $query_b = $this->db->update(PREFIX.'plugin_forum_post_replies', array('subscribe_email' => $setting), array('fpr_post_id' => $id, 'fpr_user_id' => $user_id));
+      $count = $query_a + $query_b;
+      // Check to make sure Topic was Created
+      if($count > 0){
+        return true;
+      }else{
+        return false;
+      }
+    }
+
+    /**
+     * getTopicSubscribeEmail
+     *
+     * get list of emails of all subscribed users to topic
+     * sends email to all the users subscribed
+     *
+     * @param int $post_id = current topic ID
+     * @param int $userID = current user ID
+     *
+     */
+    public function sendTopicSubscribeEmails($post_id, $user_id, $topic_title, $topic_cat, $reply_content){
+      // Get userID's for all that are set to be notified except current user
+      $data = $this->db->select("
+        SELECT * FROM (
+          (
+          SELECT fpr_user_id AS F_UID
+          FROM ".PREFIX."plugin_forum_post_replies
+          WHERE fpr_post_id = :post_id
+          AND subscribe_email = 'true'
+          AND NOT fpr_user_id = :userID
+          GROUP BY fpr_user_id
+          ORDER BY fpr_timestamp DESC
+          )
+          UNION ALL
+          (
+          SELECT forum_user_id AS F_UID
+          FROM ".PREFIX."plugin_forum_posts
+          WHERE forum_post_id = :post_id
+          AND subscribe_email = 'true'
+          AND NOT forum_user_id = :userID
+          GROUP BY forum_user_id
+          ORDER BY forum_timestamp DESC
+          )
+        ) AS uniontable
+        GROUP BY `F_UID`
+        ORDER BY `F_UID` ASC
+      ",
+      array(':post_id' => $post_id, ':userID' => $user_id));
+      foreach($data as $row){
+        // Get to user data
+        $email_data = $this->db->select("
+          SELECT email, username
+          FROM ".PREFIX."plugin_users
+          WHERE userID = :where_id
+          LIMIT 1
+        ",
+        array(':where_id' => $row->F_UID));
+        // Get from user data
+        $email_from_data = $this->db->select("
+          SELECT username
+          FROM ".PREFIX."plugin_users
+          WHERE userID = :where_id
+          LIMIT 1
+        ",
+        array(':where_id' => $user_id));
+        //EMAIL MESSAGE USING PHPMAILER
+        $mail = new \PhpMailer\Mail();
+        $mail->setFrom(SITEEMAIL, EMAIL_FROM_NAME);
+        $mail->addAddress($email_data[0]->email);
+        $mail_subject = SITE_TITLE . " - Forum - ".$email_from_data[0]->username." replied to {$topic_title}";
+        $mail->subject($mail_subject);
+        $body = "Hello ".$email_data[0]->username."<br/><br/>";
+        $body .= SITE_TITLE . " - Forum Notification<br/>
+                              <br/>
+															Category: $topic_cat<br/>
+															Topic: $topic_title<br/>
+															Reply by: ".$email_from_data[0]->username."<br/>
+                              <br/>
+															Reply Content:<br/>
+															************************<br/>
+															$reply_content<br/>
+															************************<br/>";
+        $body .= "You may check the reply at: <b><a href=\"" . SITE_URL . "/Topic/$id\">" . SITE_TITLE . " Forum - $topic_title</a></b>";
+        $mail->body($body);
+        $mail->send();
+      }
+    }
+
+
+    /**
+     * forum_search
+     *
+     * get list of topics for given category
+     *
+     * @param int $search = Search String
+     * @param string $limit data from Paginator class
+     *
+     * @return array returns forum topics list data
+     */
+    public function forum_search($search, $limit = null){
+      $data = $this->db->select("
+      (SELECT
+          forum_id,
+          forum_post_id,
+          forum_timestamp as tstamp,
+          forum_content as content,
+          forum_title as title,
+          forum_user_id,
+          forum_status,
+          forum_publish,
+          allow,
+          forum_url,
+          'main_post' AS post_type
+        FROM
+          `".PREFIX."plugin_forum_posts`
+        WHERE
+          (forum_content LIKE :search
+        OR
+          forum_title LIKE :search)
+        AND
+          allow = 'TRUE'
+        AND
+          forum_publish = '1')
+      UNION ALL
+      (SELECT
+          fpr.fpr_id,
+          fpr.fpr_post_id,
+          fpr.fpr_timestamp as tstamp,
+          fpr.fpr_content as content,
+          fp.forum_title as title,
+          fpr.fpr_user_id as forum_user_id,
+          fp.forum_status as forum_status,
+          fpr.forum_publish,
+          fpr.allow,
+          fp.forum_url as forum_url,
+          'reply_post' AS post_type
+        FROM
+          `".PREFIX."plugin_forum_post_replies` fpr
+        LEFT JOIN
+          `".PREFIX."plugin_forum_posts` fp
+        ON
+          fp.forum_post_id = fpr.fpr_post_id
+        WHERE
+          fpr_content LIKE :search
+        AND
+          fpr.allow = 'TRUE'
+        AND
+          fpr.forum_publish = '1')
+      ORDER BY tstamp DESC
+      $limit
+      ",
+      array(':search' => '%'.$search.'%'));
+      return $data;
+    }
+
+    /**
+    * forum_tracker
+    *
+    * updates/adds forum user tracking informatinon
+    * tracking information used to track if a user has
+    * viewed a new topic or reply
+    *
+    * @param int $user_id = User's ID
+    * @param int $post_id = Forum Post ID
+    *
+    */
+
+    public function forum_tracker($user_id = "", $post_id = "", $forum_id = ""){
+        /* Make sure there is a user id and post id */
+        if(!empty($user_id) && !empty($post_id) && !empty($forum_id)){
+            /* Check to see is user has a record for post_id */
+            $check_table = $this->db->selectCount("SELECT * FROM ".PREFIX."plugin_forum_tracker WHERE user_id=:user_id AND post_id=:post_id AND forum_id=:forum_id",array(":user_id"=>$user_id, ":post_id"=>$post_id, 'forum_id'=>$forum_id));
+            $current_date = date("Y-m-d H:i:s");
+            if($check_table > 0){
+              /* Data found for user - Update current date */
+              return $this->db->update(PREFIX.'plugin_forum_tracker', array('last_visit' => $current_date), array('user_id' => $user_id, 'post_id' => $post_id, 'forum_id' => $forum_id));
+            }else{
+              /* No Data for user - Create new entry */
+              return $this->db->insert(PREFIX.'plugin_forum_tracker', array('user_id' => $user_id, 'post_id' => $post_id, 'forum_id' => $forum_id, 'last_visit' => $current_date));
+            }
+        }
+    }
+
+
+    /**
+     * newMemberPostsChecker
+     *
+     * Check to see if user has posted enough times to
+     * change their group status from New Member to Member
+     *
+     * @param int user_id
+     * @param int posts_count
+     */
+    public function newMemberPostsChecker($user_id = null){
+        if(SELF::globalForumSetting('forum_posts_group_change_enable') == 'true'){
+            $posts_count = \ForumStats::getTotalPosts($user_id);
+            if(isset($user_id) && isset($posts_count)){
+                // Check if user is in the New Member Group
+        		    $new_member_group = count($this->db->select("SELECT *	FROM ".PREFIX."users_groups WHERE userID = :userID AND groupID = 1", array(':userID' => $user_id)));
+                if($new_member_group == 1){
+                    $forum_posts_group_change = SELF::globalForumSetting('forum_posts_group_change');
+                    if($posts_count >= $forum_posts_group_change){
+                        return $this->db->update(PREFIX."users_groups", array('groupID' => '2'), array('userID' => $user_id));
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * user_forum_perms
+     *
+     * Check to which groups can do stuff on the forum
+     *
+     * @param id user_id
+     * @param string forum_group
+     *
+     * @return array group permissions
+     */
+    public function group_forum_perms($user_id = null, $forum_group = null){
+        if(isset($user_id)){
+            /* Get user's groups */
+            $user_groups = $this->db->select("
+                SELECT
+                  userID, groupID
+                FROM
+                  ".PREFIX."users_groups
+                WHERE
+                  userID = :userID
+                ",
+              array(':userID' => $user_id));
+
+            $match[] = null;
+
+            /* Check to see if user's groups match any of the forum groups */
+            foreach ($user_groups as $ug) {
+                $data = count($this->db->select("
+                    SELECT *
+                    FROM ".PREFIX."plugin_forum_groups
+                    WHERE groupID = :groupID
+                    AND forum_group = :forum_group
+                ",
+                array(':groupID' => $ug->groupID, ':forum_group' => $forum_group)));
+                if($data > 0){
+                    $match[] = true;
+                }
+            }
+
+            /* Check to see if user is part of group */
+            if (in_array(true, $match)) {
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            /* No user data */
+            return false;
+        }
+    }
+
+    /**
+     * getUnPublishedWork
+     *
+     * get category data for current topic (Title)
+     *
+     * @param int $where_id = forum_id
+     *
+     * @return string returns forum category data (forum_title)
+     */
+    public function getUnPublishedWork($forum_user_id, $forum_id){
+      $data = $this->db->select("
+        SELECT forum_post_id
+        FROM ".PREFIX."plugin_forum_posts
+        WHERE forum_user_id = :forum_user_id
+        AND forum_id = :forum_id
+        AND forum_publish = '0'
+        ORDER BY forum_post_id DESC
+        LIMIT 1
+      ",
+      array(':forum_user_id' => $forum_user_id, ':forum_id' => $forum_id));
+      return $data[0]->forum_post_id;
+    }
+
+    /**
+     * getUnPublishedWorkReply
+     *
+     * get un published topic reply for selected topic and user
+     *
+     * @param int $where_id = forum_id
+     *
+     * @return string
+     */
+    public function getUnPublishedWorkReply($forum_user_id, $topic_id){
+      $data = $this->db->select("
+        SELECT id
+        FROM ".PREFIX."plugin_forum_post_replies
+        WHERE fpr_user_id = :forum_user_id
+        AND fpr_post_id = :fpr_post_id
+        AND forum_publish = '0'
+        ORDER BY id DESC
+        LIMIT 1
+      ",
+      array(':forum_user_id' => $forum_user_id, ':fpr_post_id' => $topic_id));
+      return $data[0]->id;
+    }
+
+    /**
+   * getImageCountForum
+   *
+   * gets total number of images releated to Forum
+   *
+   * @param string $location
+   * @param int $topic_id
+   * @param int $topic_id
+   *
+   * @return string returns count data
+   */
+    public function getImageCountForum($location = null, $topic_id = null, $topic_reply_id = null){
+      // Check to see if we are getting count for Forum Topic
+      if($location == "Topic"){
+        // Get image count for Forum Topics
+        $data = $this->db->select("
+          SELECT imageLocation
+          FROM ".PREFIX."plugin_forum_images
+          WHERE forumTopicID = :topic_id
+        ",
+        array(':topic_id' => $topic_id));
+        return count($data);
+      }
+    }
+
+    /**
+     * getForumImagesTopicReply
+     *
+     * get topic images
+     *
+     * @param int $topic_id
+     * @param int $topic_reply_id
+     *
+     * @return string returns image url
+     */
+    public function getForumImagesTopicReply($topic_id = null, $topic_reply_id = null){
+      // Get images for Forum Topic Reply
+      $data = $this->db->select("
+        SELECT imageName, imageLocation
+        FROM ".PREFIX."plugin_forum_images
+        WHERE forumTopicID = :topic_id
+        AND forumTopicReplyID = :topic_reply_id
+      ",
+      array(':topic_id' => $topic_id, ':topic_reply_id' => $topic_reply_id));
+      return $data;
+    }
+
+}
