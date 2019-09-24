@@ -26,7 +26,7 @@ $friends_requests_sent = $FriendsModel->friends_requests_sent($currentUserData[0
 
 ?>
 
-<div class="col-lg-9 col-md-8 col-sm-12">
+<div class="col-lg-6 col-md-4 col-sm-12">
 	<div class="card mb-3">
 		<div class="card-header h4">
 			Pending Received Friend Requests

@@ -123,4 +123,7 @@ if($get_var_1 == 'Requests'){
   require($plugin_dir.'pages/friends.php');
 }
 
+/** Include the Sidebar **/
+require($plugin_dir.'pages/friends_sidebar_right.php');
+
 ?>

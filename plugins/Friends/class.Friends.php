@@ -363,4 +363,102 @@ class Friends extends Models {
         return count($data);
     }
 
+    /**
+    * get list of all friends for current user.
+    * @param int current $userID
+    * @param int $limit
+    * @return array dataset
+    */
+    public function getFriendsIDs($userID, $limit = '100'){
+        /** Get list of User's friends and return their UserIDs **/
+            $data = $this->db->select("
+                SELECT
+                    u.userID
+                FROM
+                    ".PREFIX."plugin_friends f
+                LEFT JOIN
+                    ".PREFIX."users u
+                    ON (u.userID = f.uid1 OR u.userID = f.uid2)
+                WHERE
+                (
+                    f.uid1 = :userID
+                OR
+                    f.uid2 = :userID
+                )
+                AND
+                (
+                    f.status1 = 1 AND f.status2 = 1
+                )
+                AND
+                    u.userID != :userID
+                AND
+                    u.isactive = 1
+                GROUP BY
+                    u.username
+                LIMIT $limit
+            ",
+            array(':userID' => $userID));
+        return $data;
+    }
+
+    /**
+    * get list of users not friends with current user, but friends of friends.
+    * @param int current userID
+    * @return array dataset
+    */
+    public function getSuggestedFriends($userID){
+        /** Get list of User's friends and return their UserIDs **/
+        $friends = SELF::getFriendsIDs($userID);
+        $suggestedFriends = [];
+        /** Clean up Friends array to only userIDs **/
+        foreach ($friends as $friend) {
+          $user_friends[] = $friend->userID;
+        }
+        foreach ($friends as $friendId) {
+          /** Friends friends list. **/
+          $ff_list = SELF::getFriendsIDs($friendId->userID);
+          foreach ($ff_list as $ffriendId) {
+            /** If the friendsFriend(ff) is not us, and not our friend, he can be suggested **/
+            if ($ffriendId->userID != $userID && !in_array($ffriendId->userID, $user_friends)) {
+              /** The key is the suggested friend **/
+              $suggestedFriends[$ffriendId->userID] = ['mutual_friends' => []];
+              $ff_friends = SELF::getFriendsIDs($ffriendId->userID);
+              foreach ($ff_friends as $ff_friendId) {
+                /** If the friendsFriend(ff) is not us, and not our friend, he can be suggested **/
+                if($ff_friendId->userID != $userID){
+                  /** If he is a friend of the current user, he is a mutual friend **/
+                  $suggestedFriends[$ffriendId->userID]['mutual_friends'] = count(SELF::getMutualFriendsIDs($userID, $ffriendId->userID));
+                }
+              }
+            }
+          }
+        }
+        return $suggestedFriends;
+    }
+
+    /**
+    * get list of users not friends with current user, but friends of friends.
+    * @param int $userID
+    * @param int $cur_userID
+    * @return array dataset
+    */
+    public function getMutualFriendsIDs($userID, $cur_userID){
+        /** Get list of User's friends and return their UserIDs **/
+        $friends = SELF::getFriendsIDs($userID);
+        $user_friends = [];
+        /** Clean up Friends array to only userIDs **/
+        foreach ($friends as $friend) {
+          $user_friends[] = $friend->userID;
+        }
+        $mutual_friends = [];
+        $ff_list = SELF::getFriendsIDs($cur_userID);
+        foreach ($ff_list as $ffriendId) {
+          /** If the friendsFriend(ff) is not us, and our friend, he can be mutual **/
+          if ($ffriendId->userID != $userID && $ffriendId->userID != $cur_userID && in_array($ffriendId->userID, $user_friends)) {
+            $mutual_friends[] = $ffriendId->userID;
+          }
+        }
+        return $mutual_friends;
+    }
+
 }

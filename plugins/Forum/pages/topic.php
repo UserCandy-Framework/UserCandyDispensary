@@ -421,7 +421,7 @@ if(isset($_POST['forum_topic_reply_autosave'])){
             echo " <a href='".SITE_URL."Profile/$f_p_user_name' class='btn btn-sm btn-secondary'>$f_p_user_name</a> ";
             // Check to see if current user is logged in... if not then hide the pm button
             if(!empty($data['current_userID'])){
-              echo " <a href='".SITE_URL."NewMessage/$f_p_user_name' class='btn btn-sm btn-secondary'>PM</a> ";
+              echo " <a href='".SITE_URL."Messages/New/$f_p_user_name' class='btn btn-sm btn-secondary'>PM</a> ";
             }
             echo "<br>";
             // Show user's online status
@@ -606,7 +606,7 @@ if(isset($_POST['forum_topic_reply_autosave'])){
                 echo " <a href='".SITE_URL."Profile/".$rf_p_user_name."' class='btn btn-sm btn-secondary'>$rf_p_user_name</a>";
                 // Check to see if current user is logged in... if not then hide the pm button
                 if(!empty($data['current_userID'])){
-                  echo " <a href='".SITE_URL."NewMessage/$rf_p_user_name' class='btn btn-sm btn-secondary'>PM</a> ";
+                  echo " <a href='".SITE_URL."Messages/New/$rf_p_user_name' class='btn btn-sm btn-secondary'>PM</a> ";
                 }
                 echo "<br>";
                 // Show user's online status

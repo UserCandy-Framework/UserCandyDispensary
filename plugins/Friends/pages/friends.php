@@ -56,7 +56,7 @@ $friends_list = $FriendsModel->friends_list($currentUserData[0]->userID, $set_or
 if(!empty($friends_list)){
 ?>
 
-<div class="col-lg-9 col-md-8 col-sm-12">
+<div class="col-lg-6 col-md-4 col-sm-12">
 	<div class="card mb-3">
 		<div class="card-header h4">
 			<?=$data['title']?>

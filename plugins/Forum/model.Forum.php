@@ -1117,7 +1117,7 @@ class Forum extends Models {
         // Get to user data
         $email_data = $this->db->select("
           SELECT email, username
-          FROM ".PREFIX."plugin_users
+          FROM ".PREFIX."users
           WHERE userID = :where_id
           LIMIT 1
         ",
@@ -1125,13 +1125,13 @@ class Forum extends Models {
         // Get from user data
         $email_from_data = $this->db->select("
           SELECT username
-          FROM ".PREFIX."plugin_users
+          FROM ".PREFIX."users
           WHERE userID = :where_id
           LIMIT 1
         ",
         array(':where_id' => $user_id));
         //EMAIL MESSAGE USING PHPMAILER
-        $mail = new \PhpMailer\Mail();
+        $mail = new Mail();
         $mail->setFrom(SITEEMAIL, EMAIL_FROM_NAME);
         $mail->addAddress($email_data[0]->email);
         $mail_subject = SITE_TITLE . " - Forum - ".$email_from_data[0]->username." replied to {$topic_title}";
