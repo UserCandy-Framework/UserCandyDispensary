@@ -90,7 +90,8 @@ if($data['msg_error'] == 'true'){$panelclass = "card-danger";}else{$panelclass =
               }
 							echo "<b>From:</b> <a href='".SITE_URL."Profile/$row->username'>$row->username</a>";
               echo "</td></tr><tr>";
-							echo "<td>$row->content</td>";
+              $content_output = BBCode::getHtml($row->content);
+							echo "<td class='forum'>$content_output</td>";
 							echo "</tr><tr><td>";
                 echo Form::open(array('method' => 'post', 'action' => SITE_URL.'Messages/New/', 'style' => 'display:inline'));
                   echo "<input type='hidden' name='token_messages' value='{$data['csrfToken']}' />";

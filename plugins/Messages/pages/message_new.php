@@ -63,7 +63,7 @@ if (Csrf::isTokenValid('messages')) {
                         }
                     }else{
                         // To user's inbox is full.  Let sender know message was not sent
-                        $error[] = '<b>${to_username}&#39;s Inbox is Full!</b>  Sorry, Message was NOT sent!';
+                        $error[] = '<b>{$to_username}&#39;s Inbox is Full!</b>  Sorry, Message was NOT sent!';
                     }
                 }else{
                     // User does not exist
@@ -74,7 +74,7 @@ if (Csrf::isTokenValid('messages')) {
             // Get data from reply POST
             (Request::post('to_username') !== null) ? $to_user = Request::post('to_username') : $to_user = "";
             (Request::post('subject') !== null) ? $subject = Request::post('subject') : $subject = "";
-            (Request::post('content') !== null) ? $content = str_replace("<br />", " ", Request::post('content')) : $content = "";
+            (Request::post('content') !== null) ? $content = Request::post('content') : $content = "";
             (Request::post('date_sent') !== null) ? $date_sent = Request::post('date_sent') : $date_sent = "";
             // Add Reply details to subject ex: RE:
             $data['subject'] = "RE: ".$subject;
@@ -85,7 +85,6 @@ if (Csrf::isTokenValid('messages')) {
             $content_reply .= "&#10; # Sent: $date_sent ";
             $content_reply .= "&#10; ############################## &#10;&#10;";
             $content_reply .= $content;
-            $content_reply = str_replace("<br />", " ", $content_reply);
             $data['content'] = $content_reply;
         }// End Reply Check
 }
@@ -109,9 +108,6 @@ $data['csrfToken'] = Csrf::makeToken('messages');
 
 // Setup Breadcrumbs
 $data['breadcrumbs'] = "<li class='breadcrumb-item'><a href='".SITE_URL."Messages'>Private Messages</a></li><li class='breadcrumb-item active'>".$data['title']."</li>";
-
-// Get requested message data
-//$data['message'] = $MessagesModel->getMessage($m_id);
 
 
 ?>
@@ -152,12 +148,15 @@ $data['breadcrumbs'] = "<li class='breadcrumb-item'><a href='".SITE_URL."Message
         <?php echo Form::input(array('type' => 'text', 'name' => 'subject', 'class' => 'form-control', 'value' => urldecode($data['subject']), 'placeholder' => 'Subject', 'maxlength' => '100')); ?>
       </div>
 
+      <!-- BBCode Buttons -->
+      <?=BBCode::displayButtons('content')?>
+
       <!-- Message Content -->
       <div class='input-group mb-3' style='margin-bottom: 25px'>
 		<div class='input-group-prepend'>
 			<span class='input-group-text'><i class='fas fa-pencil-alt'></i> </span>
 		</div>
-        <?php echo Form::textBox(array('type' => 'text', 'name' => 'content', 'class' => 'form-control', 'value' => $data['content'], 'placeholder' => 'Message Content', 'rows' => '6')); ?>
+        <?php echo Form::textBox(array('type' => 'text', 'name' => 'content', 'id' => 'content', 'class' => 'form-control', 'value' => $data['content'], 'placeholder' => 'Message Content', 'rows' => '6')); ?>
       </div>
 
         <!-- CSRF Token -->

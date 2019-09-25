@@ -140,8 +140,6 @@ class Messages extends Models {
 
   // Puts new/reply message data into database
   public function sendmessage($to_userID, $from_userID, $subject, $content){
-    // Format the Content for database
-		$content = nl2br($content);
 		// Update messages table
 		$query = $this->db->insert(PREFIX.'plugin_messages', array('to_userID' => $to_userID, 'from_userID' => $from_userID, 'subject' => $subject, 'content' => $content));
 		// Check to make sure something was updated
