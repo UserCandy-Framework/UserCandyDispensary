@@ -188,22 +188,13 @@ if(isset($_POST['forum_topic_autosave'])){
               </div>
               <?php echo Form::input(array('type' => 'text', 'id' => 'forum_title', 'name' => 'forum_title', 'class' => 'form-control', 'value' => $data['forum_title'], 'placeholder' => 'Topic Title', 'maxlength' => '100')); ?>
             </div>
-
+            <!-- BBCode Buttons -->
+            <?=BBCode::displayButtons('forum_content')?>
             <!-- Topic Content -->
             <div class='input-group' style='margin-bottom: 25px'>
               <div class="input-group-prepend">
                 <span class='input-group-text'>
-                  <!-- BBCode Buttons -->
-                  <div class='btn-group-vertical'>
-                    <button type="button" class="btn btn-sm btn-light" onclick="wrapText('edit','[b]','[/b]');"><i class='fas fa-bold'></i></button>
-                    <button type="button" class="btn btn-sm btn-light" onclick="wrapText('edit','[i]','[/i]');"><i class='fas fa-italic'></i></button>
-                    <button type="button" class="btn btn-sm btn-light" onclick="wrapText('edit','[u]','[/u]');"><i class='fas fa-underline'></i></button>
-                    <button type="button" class="btn btn-sm btn-light" onclick="wrapText('edit','[youtube]','[/youtube]');"><i class='fab fa-youtube'></i></button>
-                    <button type="button" class="btn btn-sm btn-light" onclick="wrapText('edit','[quote]','[/quote]');"><i class='fas fa-quote-right'></i></button>
-                    <button type="button" class="btn btn-sm btn-light" onclick="wrapText('edit','[code]','[/code]');"><i class='fas fa-code'></i></button>
-                    <button type="button" class="btn btn-sm btn-light" onclick="wrapText('edit','[url=]','[/url]');"><i class='fas fa-link'></i></button>
-                    <button type="button" class="btn btn-sm btn-light" onclick="wrapText('edit','[img]','[/img]');"><i class='fas fa-image'></i></button>
-                  </div>
+                  <i class="fa fa-pencil-alt"></i>
                 </span>
               </div>
               <?php echo Form::textBox(array('type' => 'text', 'id' => 'forum_content', 'name' => 'forum_content', 'class' => 'form-control', 'value' => $data['forum_content'], 'placeholder' => 'Topic Content', 'rows' => '6')); ?>
