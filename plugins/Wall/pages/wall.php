@@ -20,8 +20,8 @@
   $data['csrfToken'] = Csrf::makeToken('status');
   if (isset($_POST['submit']) && isset($_POST['action'])) {
     if(Csrf::isTokenValid('status')) {
-      $status_feeling = htmlspecialchars(Request::post('status_feeling'));
-      $status_content = htmlspecialchars(Request::post('status_content'));
+      $status_feeling = Request::post('status_feeling');
+      $status_content = Request::post('status_content');
       $edit_status_id = strip_tags(Request::post('edit_status_id'));
       $data['action'] = strip_tags(Request::post('action'));
       if($data['action'] == 'status_update'){
@@ -59,7 +59,7 @@
 
 ?>
 
-<div class="col-lg-6 col-md-4 col-sm-12">
+<div class="col">
     <div class='card mb-3'>
       <div class='card-header h4'>
         Status Update
@@ -329,13 +329,13 @@
                     echo Sweets::displaySweetsButton($recent->RP_02, 'Status', $data['current_userID'], $recent->RP_06, $sweet_url);
                     echo Sweets::getSweets($recent->RP_02, 'Status', $recent->RP_06);
                   }
-                  if($DispenserModel->checkDispenserEnabled('Comments')){
-                    echo Comments::getTotalComments($recent->RP_02, 'Status', $recent->RP_06);
+                  if($DispenserModel->checkDispenserEnabled('CommentsHelper')){
+                    echo CommentsHelper::getTotalComments($recent->RP_02, 'Status', $recent->RP_06);
                   }
                 echo "</div></div></div>";
                 echo "<div class='col-12 p-0'>";
-                  if($DispenserModel->checkDispenserEnabled('Comments')){
-                    echo Comments::displayComments($recent->RP_02, 'Status', $data['current_userID'], 0, $sweet_url);
+                  if($DispenserModel->checkDispenserEnabled('CommentsHelper')){
+                    echo CommentsHelper::displayComments($recent->RP_02, 'Status', $data['current_userID'], 0, $sweet_url);
                   }
                 echo "</div>";
               echo "</div>";
