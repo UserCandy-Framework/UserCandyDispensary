@@ -7,10 +7,24 @@
 * @version 1.0.0
 */
 
-/** Check to make sure there is an update **/
-if($xmlupdate->VERSION > $dispenser_db_data[0]->version){
-  /** No DB Changes for this Widget - Update Version in DB only **/
-  if($DispenserModel->updateDispenserVersion($dispenser_db_data[0]->id, $xmlupdate->VERSION)){
-    $update_status = 'Success';
-  }
-}
+/** Add Data needed to Database - Oldest Top**/
+$install_db_data[]['1.0.1'] = "
+INSERT INTO `".PREFIX."helper_demo` (`demo_version`) VALUES
+('1.0.1');
+";
+$install_db_data[]['1.0.2'] = "
+INSERT INTO `".PREFIX."helper_demo` (`demo_version`) VALUES
+('1.0.2');
+";
+$install_db_data[]['1.0.3'] = "
+INSERT INTO `".PREFIX."helper_demo` (`demo_version`) VALUES
+('1.0.3');
+";
+$install_db_data[]['1.0.4'] = "
+INSERT INTO `".PREFIX."helper_demo` (`demo_version`) VALUES
+('1.0.4');
+";
+$install_db_data[]['1.0.5'] = "
+INSERT INTO `".PREFIX."helper_demo` (`demo_version`) VALUES
+('1.0.5');
+";

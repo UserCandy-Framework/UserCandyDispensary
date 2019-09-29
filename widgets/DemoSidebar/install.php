@@ -7,4 +7,5 @@
 * @version 1.0.0
 */
 
-//No Extra Settings Needed Here
+/** Add Data needed to Database **/
+//$install_db_data[] = "";

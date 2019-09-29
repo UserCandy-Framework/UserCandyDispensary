@@ -1,6 +1,6 @@
 <?php
 /**
-* Members Sidebar Widget Display
+* Demo Sidebar Widget Display
 *
 * UserCandy
 * @author David (DaVaR) Sargent <davar@usercandy.com>
@@ -11,9 +11,9 @@
 
     <div class='card mb-3'>
         <div class='card-header h4'>
-            This be a test widget
+            This be a Demo Widget
         </div>
         <div class='card-body'>
-			Hello There.  This is a simple test widget.
+			Hello There.  This is a Demo widget.
 		</div>
     </div>

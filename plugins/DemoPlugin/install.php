@@ -22,7 +22,7 @@ INSERT INTO `".PREFIX."plugin_demo` (`demo_version`) VALUES
 ";
 
 /** Setup Plugin Page Permissions **/
-$folder_location = "Demo";
+$folder_location = "DemoPlugin";
 $arguments = "(:any)/(:any)/(:any)/(:any)";
 $sitemap = "false";
 $plugin_display_page = CUSTOMDIR.'plugins/'.$folder_location.'/'.$folder_location.'.php';

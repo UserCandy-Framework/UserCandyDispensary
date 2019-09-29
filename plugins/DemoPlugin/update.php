@@ -28,3 +28,7 @@ $install_db_data[]['1.0.5'] = "
 INSERT INTO `".PREFIX."plugin_demo` (`demo_version`) VALUES
 ('1.0.5');
 ";
+$install_db_data[]['1.0.6'] = "
+INSERT INTO `".PREFIX."plugin_demo` (`demo_version`) VALUES
+('1.0.6');
+";

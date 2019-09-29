@@ -20,7 +20,7 @@ $demo_output = $DemoModel->Demo();
 
 ?>
 
-<div class="col-lg-6 col-md-4 col-sm-12">
+<div class="col">
 	<div class="card mb-3">
 		<div class="card-header h4">
 			<?=$data['title']?>

@@ -10,7 +10,7 @@
 /** Demo model **/
 class Demo extends Models {
 
-	public function Demo{
+	public function Demo(){
 		$demo = "Hello World from Demo";
 		return $demo;
     }
