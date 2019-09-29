@@ -114,28 +114,27 @@ class WallModel extends Models {
   * @return array dataset
   */
   public function getRecent($userID, $limit = '10'){
+      $DispenserModel = new DispenserModel();
       /** Setup Vars **/
-      $sweets = SELF::sweets();
-      $forum_posts = SELF::forum_posts();
-      $forum_post_replies = SELF::forum_post_replies();
-      $default_images = SELF::default_images();
-      $profile_images = SELF::profile_images();
-      $status = SELF::status();
+      if($DispenserModel->checkDispenserEnabled('Sweets')){
+        $sweets = SELF::sweets()." UNION ALL ";
+      }
+      if($DispenserModel->checkDispenserEnabled('Forum')){
+        $forum_posts = SELF::forum_posts()." UNION ALL ";
+        $forum_post_replies = SELF::forum_post_replies()." UNION ALL ";
+      }
+      $default_images = SELF::default_images()." UNION ALL ";
+      $profile_images = SELF::profile_images()." UNION ALL ";
+      $status = SELF::status()." UNION ALL ";
       $status_cur_user = SELF::status_cur_user();
       /** Get Recents from databasse **/
       $data = $this->db->select("
         $sweets
-        UNION ALL
         $forum_posts
-        UNION ALL
         $forum_post_replies
-        UNION ALL
         $default_images
-        UNION ALL
         $profile_images
-        UNION ALL
         $status
-        UNION ALL
         $status_cur_user
         ORDER BY RP_01 DESC
         LIMIT $limit
@@ -150,29 +149,28 @@ class WallModel extends Models {
   * @return int count
   */
   public function getRecentTotal($userID){
+      $DispenserModel = new DispenserModel();
       /** Setup Vars **/
-      $sweets = SELF::sweets();
-      $forum_posts = SELF::forum_posts();
-      $forum_post_replies = SELF::forum_post_replies();
-      $default_images = SELF::default_images();
-      $profile_images = SELF::profile_images();
-      $status = SELF::status();
+      if($DispenserModel->checkDispenserEnabled('Sweets')){
+        $sweets = SELF::sweets()." UNION ALL ";
+      }
+      if($DispenserModel->checkDispenserEnabled('Forum')){
+        $forum_posts = SELF::forum_posts()." UNION ALL ";
+        $forum_post_replies = SELF::forum_post_replies()." UNION ALL ";
+      }
+      $default_images = SELF::default_images()." UNION ALL ";
+      $profile_images = SELF::profile_images()." UNION ALL ";
+      $status = SELF::status()." UNION ALL ";
       $status_cur_user = SELF::status_cur_user();
       /** Get Recents from databasse **/
       $data = $this->db->select("
         SELECT sum(count) as total_rows FROM (
           $sweets
-          UNION ALL
           $forum_posts
-          UNION ALL
           $forum_post_replies
-          UNION ALL
           $default_images
-          UNION ALL
           $profile_images
-          UNION ALL
           $status
-          UNION ALL
           $status_cur_user
         ) as num_rows
       ",

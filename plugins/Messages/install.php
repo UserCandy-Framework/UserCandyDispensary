@@ -48,7 +48,7 @@ if(file_exists($plugin_display_page)){
       $AdminPanelModel->updateSetting('messages_pageinator_limit', '20');
       $AdminPanelModel->updateSetting('messages_quota_limit', '50');
       /** New Route added to database.  Add to site Links */
-      if($AdminPanelModel->addSiteLink($folder_location, $folder_location, $folder_location." - ".$folder_location, 'header_main', '0', '')){
+      if($AdminPanelModel->addSiteLink($folder_location, 'header_main', '1')){
         /** Success */
         $new_pages[] = $page_url." Added to Site Links<Br>";
       }

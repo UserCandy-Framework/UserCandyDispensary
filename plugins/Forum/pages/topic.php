@@ -505,7 +505,7 @@ if(isset($_POST['forum_topic_reply_autosave'])){
               /** Check to see if Sweets helper is installed **/
               if($DispenserModel->checkDispenserEnabled('Sweets')){
     						//Start Sweet
-                $sweet_url = "Topic/".$data['topic_id'];
+                $sweet_url = "Forum/Topic/".$data['topic_id'];
                 echo Sweets::displaySweetsButton($data['topic_id'], 'Forum_Topic', $data['current_userID'], "0", $sweet_url);
                 echo Sweets::getSweets($data['topic_id'], 'Forum_Topic');
               }
@@ -687,7 +687,7 @@ if(isset($_POST['forum_topic_reply_autosave'])){
                   /** Check to see if Sweets helper is installed **/
                   if($DispenserModel->checkDispenserEnabled('Sweets')){
   									//Start Sweet
-                    $sweet_url = "Topic/".$data['topic_id']."/".$data['current_page']."/#topicreply".$rf_p_main_id;
+                    $sweet_url = "Forum/Topic/".$data['topic_id']."/".$data['current_page']."/#topicreply".$rf_p_main_id;
                     echo Sweets::displaySweetsButton($data['topic_id'], 'Forum_Topic_Reply', $data['current_userID'], $rf_p_main_id, $sweet_url);
                     echo Sweets::getSweets($data['topic_id'], 'Forum_Topic_Reply', $rf_p_main_id);
                   }

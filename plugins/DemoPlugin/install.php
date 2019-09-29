@@ -41,7 +41,7 @@ if(file_exists($plugin_display_page)){
       //$AdminPanelModel->addPagePermission($page_id, '3'); // Moderator Group
       //$AdminPanelModel->addPagePermission($page_id, '4'); // Administrator Group
       /** New Route added to database.  Add to site Links */
-      if($AdminPanelModel->addSiteLink($folder_location, $folder_location, $folder_location." - ".$folder_location, 'header_main', '0', '')){
+      if($AdminPanelModel->addSiteLink($folder_location, 'header_main', '0')){
         /** Success */
         $new_pages[] = $page_url." Added to Site Links<Br>";
       }
