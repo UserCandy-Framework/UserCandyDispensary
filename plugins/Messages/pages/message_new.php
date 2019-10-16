@@ -7,6 +7,8 @@
 * @version 1.0.0
 */
 
+use Helpers\{Csrf,Request,SuccessMessages,ErrorMessages,Url,Form,CurrentUserData,BBCode};
+
 $to_user = $get_var_2;
 $subject = $get_var_3;
 

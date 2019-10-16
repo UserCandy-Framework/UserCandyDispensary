@@ -7,6 +7,8 @@
 * @version 1.0.0
 */
 
+use Helpers\{Paginator,ErrorMessages};
+
 /** Get data from URL **/
 (empty($viewVars[0])) ? $get_var_1 = "" : $get_var_1 = $viewVars[0];
 (empty($viewVars[1])) ? $get_var_2 = "" : $get_var_2 = $viewVars[1];

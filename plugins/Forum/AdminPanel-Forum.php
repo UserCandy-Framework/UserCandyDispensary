@@ -7,6 +7,9 @@
 * @version 1.0.0
 */
 
+use Helpers\ErrorMessages;
+use Models\AdminPanelModel;
+
 /** Check to see if user is logged in **/
 if($auth->isLogged()){
   if($usersModel->checkIsAdmin($u_id) == 'false'){

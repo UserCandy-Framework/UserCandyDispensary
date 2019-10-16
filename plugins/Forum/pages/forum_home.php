@@ -7,6 +7,8 @@
 * @version 1.0.0
 */
 
+use Helpers\{Csrf,CurrentUserData,TimeDiff};
+
 /** Forum Home Page View **/
 // Collect Data for view
   $data['title'] = $forum_title;

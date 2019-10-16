@@ -7,6 +7,8 @@
 * @version 2.1.2 for UAP v.4.3.0
 */
 
+use Helpers\{Csrf,ErrorMessages,SuccessMessages,CurrentUserData,Request,Url,Form,BBCode,SimpleImage};
+
 /** Forum New Topic View **/
 
 /** Get Data from URL **/

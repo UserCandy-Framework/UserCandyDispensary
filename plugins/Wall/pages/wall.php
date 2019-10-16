@@ -7,6 +7,9 @@
 * @version 4.3.0
 */
 
+use Core\Language;
+use Helpers\{Csrf,Request,SuccessMessages,ErrorMessages,Form,Url,BBCode,CurrentUserData,TimeDiff};
+
 /** Get Data from URL **/
 (empty($get_var_2)) ? $limit = "10" : $limit = $get_var_2;
 

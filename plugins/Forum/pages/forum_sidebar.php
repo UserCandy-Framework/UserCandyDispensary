@@ -7,6 +7,8 @@
 * @version 2.1.2 for UAP v.4.3.0
 */
 
+use Helpers\{CurrentUserData,TimeDiff};
+
   if(empty($data['forum_recent_posts'])){ $data['forum_recent_posts'] = ForumStats::forum_recent_posts();}
 
 ?>

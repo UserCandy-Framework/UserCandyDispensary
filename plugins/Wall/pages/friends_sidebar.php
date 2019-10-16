@@ -7,6 +7,9 @@
 * @version 4.3.0
 */
 
+use Core\Language;
+use Helpers\CurrentUserData;
+
 ?>
 <script>
 function processFriends()

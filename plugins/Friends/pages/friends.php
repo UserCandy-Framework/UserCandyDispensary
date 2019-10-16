@@ -7,6 +7,9 @@
 * @version 1.0.0
 */
 
+use Core\Language;
+use Helpers\CurrentUserData;
+
 /** Get Data from URL **/
 (empty($get_var_1)) ? $set_order_by = "ID-ASC" : $set_order_by = $get_var_1;
 (empty($get_var_2)) ? $current_page = "1" : $current_page = $get_var_2;

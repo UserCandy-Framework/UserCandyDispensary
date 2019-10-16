@@ -7,6 +7,7 @@
 * @version 1.0.0
 */
 
+use Helpers\{Csrf,CurrentUserData};
 
 /** Collect Data page for view **/
 $data['title'] = "My Friend Requests";

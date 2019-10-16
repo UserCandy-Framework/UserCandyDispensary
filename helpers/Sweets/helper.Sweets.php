@@ -9,6 +9,8 @@
  * @version 1.0.0
  */
 
+use Helpers\{Database,Form,Request,SuccessMessages,ErrorMessages};
+
 class Sweets
 {
 

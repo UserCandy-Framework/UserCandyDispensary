@@ -7,6 +7,9 @@
 * @version 1.0.0
 */
 
+use Core\Models;
+use Helpers\Mail;
+
 class Messages extends Models {
 
   // Gets all inbox messages for current user from database

@@ -7,6 +7,8 @@
 * @version 1.0.0
 */
 
+use Helpers\Csrf;
+
 // Collect Data for view
 $data['title'] = "My Private Messages";
 $data['welcomeMessage'] = "Welcome to Your Private Messages";

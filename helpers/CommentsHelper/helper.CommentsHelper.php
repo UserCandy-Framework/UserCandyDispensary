@@ -7,6 +7,9 @@
 * @version 1.0.0
 */
 
+use Helpers\{Database,AuthHelper,Request,Form,CurrentUserData,TimeDiff,BBCode,SuccessMessages,ErrorMessages};
+use Models\DispenserModel;
+
 class CommentsHelper
 {
 

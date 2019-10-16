@@ -7,6 +7,9 @@
 * @version 2.1.2 for UAP v.4.3.0
 */
 
+use Helpers\{ErrorMessages,SuccessMessages,Paginator,Csrf,Request,Url,PageFunctions,Form};
+use Models\AdminPanelModel;
+
 /** Forum Categories Admin Panel View **/
 (empty($get_var_2)) ? $action = null : $action = $get_var_2;
 (empty($get_var_3)) ? $id = null : $id = $get_var_3;

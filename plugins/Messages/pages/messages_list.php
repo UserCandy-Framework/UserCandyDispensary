@@ -7,6 +7,8 @@
 * @version 1.0.0
 */
 
+use Helpers\{Csrf,Request,SuccessMessages,ErrorMessages,Url,Form,CurrentUserData};
+
 $current_page = $get_var_2;
 
 if($get_var_1 == 'Outbox'){

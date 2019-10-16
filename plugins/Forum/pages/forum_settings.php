@@ -7,6 +7,9 @@
 * @version 2.1.2 for UAP v.4.3.0
 */
 
+use Helpers\{ErrorMessages,SuccessMessages,Paginator,Csrf,Request,Url,PageFunctions,Form};
+use Models\AdminPanelModel;
+
 /** Forum Settings Admin Panel View **/
 
 // Check to make sure admin is trying to update user profile

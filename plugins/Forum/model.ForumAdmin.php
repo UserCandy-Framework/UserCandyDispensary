@@ -7,6 +7,8 @@
 * @version 1.0.0
 */
 
+use Core\Models;
+
 class ForumAdmin extends Models {
 
   /**

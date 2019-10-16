@@ -7,6 +7,9 @@
 * @version 1.0.0
 */
 
+use Core\Models;
+use Models\DispenserModel;
+
 class WallModel extends Models {
 
   /**

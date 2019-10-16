@@ -7,6 +7,8 @@
 * @version 1.0.0
 */
 
+use Helpers\CurrentUserData;
+
 ?>
 
 <div class='col-lg-3 col-md-4'>

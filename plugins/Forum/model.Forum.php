@@ -7,6 +7,9 @@
 * @version 1.0.0
 */
 
+use Core\Models;
+use Helpers\Url;
+
 class Forum extends Models {
 
   /**

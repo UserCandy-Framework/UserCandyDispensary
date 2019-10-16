@@ -7,6 +7,8 @@
 * @version 1.0.0
 */
 
+use Helpers\{Csrf,Request,SuccessMessages,ErrorMessages,Url,Form,CurrentUserData, BBCode};
+
 $m_id = $get_var_2;
 
 // Check to make sure user is trying to send new message

@@ -9,8 +9,11 @@
 * @version 4.3.0
 */
 
+use Helpers\Database;
+
 class PageViews
 {
+
   private static $db;
 
   /**
