@@ -178,7 +178,7 @@ if(file_exists($plugin_display_page)){
       /** Add new permission for the page and set as public */
       $AdminPanelModel->addPagePermission($page_id, '0');
       /** New Route added to database.  Add to site Links */
-      if($AdminPanelModel->addSiteLink($folder_location, 'header_main', '0')){
+      if($AdminPanelModel->addSiteLinkDispenser($folder_location, 'header_main', '0')){
         /** Success */
         $new_pages[] = $folder_location." Added to Site Links<Br>";
       }

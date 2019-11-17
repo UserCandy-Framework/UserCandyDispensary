@@ -44,7 +44,7 @@ if(file_exists($plugin_display_page)){
       /** Add Settings to Global site settings **/
       $AdminPanelModel->updateSetting('friends_pageinator_limit', '20');
       /** New Route added to database.  Add to site Links */
-      if($AdminPanelModel->addSiteLink($folder_location, 'header_main', '1')){
+      if($AdminPanelModel->addSiteLinkDispenser($folder_location, 'header_main', '1')){
         /** Success */
         $new_pages[] = $page_url." Added to Site Links<Br>";
       }
