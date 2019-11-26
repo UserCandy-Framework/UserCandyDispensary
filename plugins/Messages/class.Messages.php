@@ -161,7 +161,7 @@ class Messages extends Models {
       // Check to see if user has privacy pm enabled
       if($privacy_pm == "true"){
         //EMAIL MESSAGE USING PHPMAILER
-        $mail = new Mail();
+        $mail = new Helpers\Mail();
         $mail->setFrom(SITEEMAIL, EMAIL_FROM_NAME);
         $mail->addAddress($email);
         $mail_subject = " " . SITE_TITLE . " - New Private Message";

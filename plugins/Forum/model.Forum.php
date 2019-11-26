@@ -1134,7 +1134,7 @@ class Forum extends Models {
         ",
         array(':where_id' => $user_id));
         //EMAIL MESSAGE USING PHPMAILER
-        $mail = new Mail();
+        $mail = new Helpers\Mail();
         $mail->setFrom(SITEEMAIL, EMAIL_FROM_NAME);
         $mail->addAddress($email_data[0]->email);
         $mail_subject = SITE_TITLE . " - Forum - ".$email_from_data[0]->username." replied to {$topic_title}";
