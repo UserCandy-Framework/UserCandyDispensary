@@ -5,6 +5,16 @@
 * UserCandy
 * @author David (DaVaR) Sargent <davar@usercandy.com>
 * @version 1.0.0
+*
+* Sample Usage
+*
+* Getting Total Comments
+*  echo CommentsHelper::getComments($row->id, 'BugTracker');
+*  echo CommentsHelper::getTotalCommentsCount($row->id, 'BugTracker');
+*  echo CommentsHelper::getTotalComments($row->id, 'BugTracker');
+*
+* Displaying Comments
+*  echo CommentsHelper::displayComments($get_var_2, 'BugTracker');
 */
 
 use Helpers\{Database,AuthHelper,Request,Form,CurrentUserData,TimeDiff,BBCode,SuccessMessages,ErrorMessages};
@@ -35,8 +45,7 @@ class CommentsHelper
   public static function getComments($com_id = null, $com_location = null, $com_sec_id = null, $display_type = "btn"){
     // Get comment count from db
     // Check to see if this is a comment for a secondary post
-//    var_dump($com_sec_id);
-    if($com_sec_id == null){
+    if(empty($com_sec_id)){
       // Comment is for main post
       self::$db = Database::get();
       $com_count = self::$db->select("
@@ -46,12 +55,13 @@ class CommentsHelper
             ".PREFIX."helper_comments
           WHERE
             com_id = :com_id
-              AND com_location = :com_location
-              AND com_sec_id = :com_sec_id
+          AND (com_location = :com_location
+          OR com_location = :com_sec_location)
           ",
         array(':com_id' => $com_id,
               ':com_location' => $com_location,
-              ':com_sec_id' => '0'));
+              ':com_sec_location' => "Sec".$com_location
+            ));
       $com_total = count($com_count);
     }else{
       // Comment is for secondary post
@@ -344,24 +354,53 @@ class CommentsHelper
  *
  */
   public static function addComment($com_id = null, $com_location = null, $com_owner_userid = null, $com_sec_id = "0", $com_url = null, $com_content = null){
-      // Insert New Comment Into Database
+    /** Check to make sure Comment has content in it **/
+    if(!empty($com_content)){
+      /** Insert New Comment Into Database **/
       self::$db = Database::get();
       $com_add_data = self::$db->insert(
         PREFIX.'helper_comments',
-          array('com_id' => $com_id,
-                'com_location' => $com_location,
-                'com_owner_userid' => $com_owner_userid,
-                'com_sec_id' => $com_sec_id,
-                'com_content' => $com_content
-              ));
+         array('com_id' => $com_id,
+               'com_location' => $com_location,
+               'com_owner_userid' => $com_owner_userid,
+               'com_sec_id' => $com_sec_id,
+               'com_content' => $com_content
+             ));
       if($com_add_data > 0){
-        // Clean url by removing the anchor
+        /** Clean url by removing the anchor **/
         $clean_com_url = substr($com_url, 0, strrpos( $com_url, '/'));
-        // Success
+        /** Send all users in this comment chain an email notification **/
+        $users_in_comments = self::getInCommentsUsers($com_id, $com_location, $com_owner_userid);
+        /** EMAIL MESSAGE USING PHPMAILER **/
+        if(!empty($users_in_comments)){
+          $user_commenter = CurrentUserData::getUserName($com_owner_userid);
+          $com_location = str_replace("Sec", "", $com_location);
+          $mail = new Helpers\Mail();
+          $mail->setFrom(SITEEMAIL, EMAIL_FROM_NAME);
+          foreach($users_in_comments as $row){
+            $mail->addBCC($row);
+          }
+          $mail_subject = SITE_TITLE . " - New Comment by ".$user_commenter;
+          $mail->subject($mail_subject);
+          $body = "<b>".SITE_TITLE." - Comment Notification </b>
+                                <hr/>
+                                <b>New Comment by ".$user_commenter." to ".$com_location." on ".SITE_TITLE."</b>
+                                <hr/>
+                                <b>Comment</b>:<br/>
+                                ".$com_content."
+                                <hr/>";
+          $body .= "<a href=\"".SITE_URL.$clean_com_url."/#viewcom".$com_add_data."\">View Comment</a>";
+          $mail->body($body);
+          $mail->send();
+        }
+        /** Success **/
         SuccessMessages::push('You Have Successfully Submitted a Comment', $clean_com_url."/#viewcom$com_add_data");
       }else{
         ErrorMessages::push('There Was an Error Submitting Comment', $com_url);
       }
+    }else{
+      ErrorMessages::push('Comment was blank.  Please try again.', $com_url);
+    }
   }
 
   /**
@@ -441,7 +480,6 @@ class CommentsHelper
  */
   public static function getTotalComments($com_id = null, $com_location = null, $com_sec_location = null){
     self::$db = Database::get();
-    $com_location2 = "Sec".$com_location;
     $com_count = self::$db->select("
         SELECT
           *
@@ -454,7 +492,7 @@ class CommentsHelper
         ",
       array(':com_id' => $com_id,
             ':com_location' => $com_location,
-            ':com_location2' => $com_location2
+            ':com_location2' => "Sec".$com_location
           ));
     $com_total = count($com_count);
     $com_display = " <div class='btn btn-success btn-sm'>Comments <span class='badge badge-light'>$com_total</span></div> ";
@@ -501,15 +539,57 @@ class CommentsHelper
           WHERE
             (com_id = :com_id OR com_sec_id = :com_id)
           AND
-            (com_location = :com_location)
+            (com_location = :com_location OR com_location = :com_sec_location)
           ",
         array(':com_id' => $com_id,
-              ':com_location' => $com_location
+              ':com_location' => $com_location,
+              ':com_sec_location' => "Sec".$com_location
             ));
       $com_total = count($com_count);
     }
     return $com_total;
   }
+
+  /**
+ * getInCommentsUsers
+ *
+ * gets comment count for all comments releated to com_id
+ *
+ * @param int $com_id (ID of post where comments are)
+ * @param string $com_location (Section of site where comments are)
+ * @param string $com_owner_userid (User ID of poster to exclude)
+ *
+ * @return string returns comment data
+ */
+  public static function getInCommentsUsers($com_id = null, $com_location = null, $com_owner_userid = null){
+    $com_location = str_replace("Sec", "", $com_location);
+    self::$db = Database::get();
+    $com_user_ids = self::$db->select("
+        SELECT
+          com_owner_userid
+        FROM
+          ".PREFIX."helper_comments
+        WHERE
+          (com_id = :com_id)
+        AND
+          (com_location = :com_location OR com_location = :com_location2)
+        AND NOT
+          (com_owner_userid = :com_owner_userid)
+        GROUP BY
+          com_owner_userid
+        ",
+      array(':com_id' => $com_id,
+            ':com_location' => $com_location,
+            ':com_location2' => "Sec".$com_location,
+            ':com_owner_userid' => $com_owner_userid
+          ));
+    /** Get all user emails **/
+    foreach ($com_user_ids as $row) {
+      $com_user_emails[] = CurrentUserData::getUserEmail($row->com_owner_userid);
+    }
+    return $com_user_emails;
+  }
+
 
 }
 

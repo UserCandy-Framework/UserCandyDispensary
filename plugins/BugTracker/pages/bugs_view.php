@@ -146,7 +146,7 @@ if($type == 'Bug'){
 ?>
 	<div class="card mb-3">
 		<div class="card-header h4">
-			<?=CommentsHelper::getComments($get_var_2, 'BugTracker', '', '')?> Comments
+			<?=CommentsHelper::getTotalCommentsCount($get_var_2, 'BugTracker')?> Comments
 		</div>
 		<div class="card-body">
 			<?=CommentsHelper::displayComments($get_var_2, 'BugTracker')?>

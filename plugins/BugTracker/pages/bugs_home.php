@@ -113,7 +113,7 @@ $bugs_output = $BugTrackerModel->getBugs($pages->getLimit($current_page, $bugs_l
 			        if($DispenserModel->checkDispenserEnabled('CommentsHelper')){
 								echo "<td>";
 								echo "<i class='fas fa-comment'></i> ";
-								echo CommentsHelper::getComments($row->id, 'BugTracker', '', '');
+								echo CommentsHelper::getTotalCommentsCount($row->id, 'BugTracker');
 								echo "</td>";
 							}
 							echo "<td class='d-none d-md-table-cell'>";

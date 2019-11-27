@@ -13,7 +13,9 @@
   <!-- Let everyone know who created this Plugin -->
   <AUTHOR>DaVaR</AUTHOR>
   <!-- Current Release Version of this Plugin - Used to let others know when to update -->
-  <VERSION>1.0.0</VERSION>
+  <VERSION>1.0.1</VERSION>
+  <!-- Current Version of UserCandy this item works with -->
+  <UCVERSION>1.0.0</UCVERSION>
   <!-- Current Release Date of this Plugin -->
   <RELEASE_DATE>9/25/2019</RELEASE_DATE>
   <!-- Plugin Image URL to display with the Plugin in the Dispenser -->

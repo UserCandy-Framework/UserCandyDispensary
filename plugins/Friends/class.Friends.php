@@ -289,10 +289,10 @@ class Friends extends Models {
             $mail_subject = SITE_TITLE . " - Friends - ".$email_from_data[0]->username." sent you a Friend Request";
             $mail->subject($mail_subject);
             $body = "Hello ".$email_data[0]->username."<br/><br/>";
-            $body .= SITE_TITLE . " - New Friend Request Notification<br/>
-                                  ************************<br/>
+            $body .= SITE_TITLE . " - New Friend Request Notification
+                                  <hr/>
                                   ".$email_from_data[0]->username." wants to be your friend on ".SITE_TITLE."
-                                  ************************<br/>";
+                                  <hr/>";
             $body .= "You may approve or reject at: <b><a href=\"" . SITE_URL . "/\">" . SITE_TITLE . "</a></b>";
             $mail->body($body);
             $mail->send();
