@@ -139,6 +139,24 @@ if($type == 'Bug'){
 				</div>
 			</div>
 		</div>
+    <div class="card-footer">
+      <?php
+      /** Check to see if PageViews helper is installed **/
+      if($DispenserModel->checkDispenserEnabled('PageViews')){
+        /** Update and Get Views Data **/
+        $data['PageViews'] = PageViews::views('true', $get_var_2, 'BugTracker', $currentUserData[0]->userID);
+        /** Display Views Count **/
+        echo "<div class='btn btn-sm btn-info'>Views <span class='badge badge-light'>".$data['PageViews']."</span></div>";
+      }
+      /** Check to see if Sweets helper is installed **/
+      if($DispenserModel->checkDispenserEnabled('Sweets')){
+        /** Display Total Sweets Count **/
+        $sweet_url = "BugTracker/View/".$get_var_2;
+        echo Sweets::displaySweetsButton($get_var_2, 'BugTracker', $currentUserData[0]->userID, "0", $sweet_url);
+        echo Sweets::getSweets($get_var_2, 'BugTracker');
+      }
+      ?>
+    </div>
   </div>
 <?php
   /** Check if Comments Helper is installed **/
