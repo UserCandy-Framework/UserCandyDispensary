@@ -10,6 +10,10 @@
 use Core\Language;
 use Helpers\CurrentUserData;
 
+/** Get Short list of current user's friends. **/
+$friends = $WallModel->getFriendsIDs($currentUserData[0]->userID, '15');
+$suggested_friends = $WallModel->getSuggestedFriends($currentUserData[0]->userID);
+
 ?>
 <script>
 function processFriends()
