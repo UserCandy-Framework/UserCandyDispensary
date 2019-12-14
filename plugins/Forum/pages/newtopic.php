@@ -152,8 +152,19 @@ if(isset($_POST['forum_topic_autosave'])){
     }
   }
 
+  // Check to see if we are displaying an array of errors
+  if(is_array($error)){
+    // Not an array, display single error
+    $error_msg = "";
+    foreach($error as $em){
+      $error_msg .= "<br>$em";
+    }
+  }else{
+    $error_msg = $error;
+  }
+
   // Output errors if any
-  if(!empty($error)){ $data['error'] = $error; };
+  if(!empty($error)){ ErrorMessages::push('Error with Forum <Br>'.$error_msg, 'Forum'); };
 
   // Get Recent Posts List for Sidebar
   $data['forum_recent_posts'] = $model->forum_recent_posts();
@@ -166,7 +177,6 @@ if(isset($_POST['forum_topic_autosave'])){
 
   /* Add Java Stuffs */
   $js = "<script src='".Url::templatePath()."js/bbcode.js'></script>";
-  $js .= "<script src='https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js'></script>";
   $js .= "<script src='".Url::templatePath()."js/forum_autosave_topic.js'></script>";
 
 ?>

@@ -28,7 +28,7 @@ use Helpers\{Csrf,Request,SuccessMessages,ErrorMessages,Form,Url,BBCode,CurrentU
       $edit_status_id = strip_tags(Request::post('edit_status_id'));
       $data['action'] = strip_tags(Request::post('action'));
       if($data['action'] == 'status_update'){
-        if($WallModel->addStatus($u_id, $status_feeling, $status_content)){
+        if(!empty($status_content) && $WallModel->addStatus($u_id, $status_feeling, $status_content)){
           /** Success Message Display **/
           SuccessMessages::push(Language::show('status_update_success', 'Welcome'), 'Wall');
         }else{

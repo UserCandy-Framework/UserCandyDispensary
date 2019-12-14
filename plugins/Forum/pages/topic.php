@@ -319,8 +319,19 @@ if(isset($_POST['forum_topic_reply_autosave'])){
     } // End token check
   } // End post check
 
+  // Check to see if we are displaying an array of errors
+  if(is_array($error)){
+    // Not an array, display single error
+    $error_msg = "";
+    foreach($error as $em){
+      $error_msg .= "<br>$em";
+    }
+  }else{
+    $error_msg = $error;
+  }
+
   // Output errors if any
-  if(!empty($error)){ $data['error'] = $error; };
+  if(!empty($error)){ ErrorMessages::push('Error with Forum <Br>'.$error_msg, 'Forum/Topic/'.$id); };
 
   /** Check to see if PageViews helper is installed **/
   if($DispenserModel->checkDispenserEnabled('PageViews')){
@@ -338,7 +349,6 @@ if(isset($_POST['forum_topic_reply_autosave'])){
   $data['csrf_token'] = Csrf::makeToken('forum');
 
   /* Add Java Stuffs */
-  $js .= "<script src='https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js'></script>";
   $js .= "<script src='".Url::templatePath()."js/forum_autosave_topic_reply.js'></script>";
 
 ?>

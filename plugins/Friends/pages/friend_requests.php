@@ -38,7 +38,7 @@ $friends_requests_sent = $FriendsModel->friends_requests_sent($currentUserData[0
                 if(!empty($friends_requests_recv)){
                     echo "<thead><tr>
                             <th colspan='2'>User Name</th>
-                            <th>First Name</th>
+                            <th class='d-none d-md-table-cell'>First Name</th>
                             <th colspan='3'>Actions</th>
                           </tr></thead>";
                     echo "<tbody>";
@@ -58,7 +58,7 @@ $friends_requests_sent = $FriendsModel->friends_requests_sent($currentUserData[0
                             echo "<tr>
                                     <td width='20px'><img src=".SITE_URL.IMG_DIR_PROFILE.$member_userImage." class='rounded' style='height: 25px'></td>
                                     <td> $online_check <a href='".SITE_URL."Profile/{$member_username}'> {$member_username}</a></td>
-                                    <td>{$member_firstName}</td>
+                                    <td class='d-none d-md-table-cell'>{$member_firstName}</td>
                                     <td><a href='".SITE_URL."Profile/{$member_username}' class='btn btn-sm btn-primary'>View Profile</a></td>
                                     <td><a href='".SITE_URL."Friends/ApproveFriend/{$member_username}' class='btn btn-sm btn-success'>Approve</a></td>
                                     <td><a href='".SITE_URL."Friends/CancelFriend/{$member_username}' class='btn btn-sm btn-danger'>Reject Request</a></td>
@@ -85,7 +85,7 @@ $friends_requests_sent = $FriendsModel->friends_requests_sent($currentUserData[0
                 if(!empty($friends_requests_sent)){
                     echo "<thead><tr>
                             <th colspan='2'>User Name</th>
-                            <th>First Name</th>
+                            <th class='d-none d-md-table-cell'>First Name</th>
                             <th colspan='2'>Actions</th>
                           </tr></thead>";
                     echo "<tbody>";
@@ -105,7 +105,7 @@ $friends_requests_sent = $FriendsModel->friends_requests_sent($currentUserData[0
                             echo "<tr>
                                     <td width='20px'><img src=".SITE_URL.IMG_DIR_PROFILE.$member_userImage." class='rounded' style='height: 25px'></td>
                                     <td> $online_check <a href='".SITE_URL."Profile/{$member_username}'> {$member_username}</a></td>
-                                    <td>{$member_firstName}</td>
+                                    <td class='d-none d-md-table-cell'>{$member_firstName}</td>
                                     <td><a href='".SITE_URL."Profile/{$member_username}' class='btn btn-sm btn-primary'>View Profile</a></td>
                                     <td><a href='".SITE_URL."CancelFriend/{$member_username}' class='btn btn-sm btn-danger'>Cancel</a></td>
                                   </tr>";

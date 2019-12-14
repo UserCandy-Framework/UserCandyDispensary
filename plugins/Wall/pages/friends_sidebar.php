@@ -30,7 +30,7 @@ function processFriends()
       My Friends
     </div>
     <ul class='list-group list-group-flush'>
-      <li class='list-group-item'><span class='fas fa-inbox'></span> <a href='<?php echo SITE_URL ?>FriendRequests' rel='nofollow'>Friend Requests
+      <li class='list-group-item'><span class='fas fa-inbox'></span> <a href='<?php echo SITE_URL ?>Friends/Requests' rel='nofollow'>Friend Requests
         <?php
             /** Check to see if there are any pending friend requests **/
             $new_friend_count = CurrentUserData::getFriendRequests($currentUserData[0]->userID);

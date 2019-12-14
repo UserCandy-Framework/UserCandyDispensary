@@ -7,6 +7,8 @@
 * @version 1.0.0
 */
 
+use Helpers\CurrentUserData;
+
 $data['suggested_friends'] = $FriendsModel->getSuggestedFriends($u_id);
 
 ?>

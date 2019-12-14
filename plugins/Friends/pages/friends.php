@@ -92,7 +92,7 @@ if(!empty($friends_list)){
 					echo "<a href='".SITE_URL."Friends/$obu_value/".$data['current_page_num'].$search_url."' class=''>".Language::show('friends_username', 'Friends')." $obu_icon</button>";
 					?>
 				</th>
-        <th><?=Language::show('members_firstname', 'Members'); ?></th>
+        <th class='d-none d-md-table-cell'><?=Language::show('members_firstname', 'Members'); ?></th>
         <th></th>
             </tr>
         </thead>
@@ -115,7 +115,7 @@ if(!empty($friends_list)){
                             echo "<tr>
                                     <td width='20px'><img src=".SITE_URL.IMG_DIR_PROFILE.$member_userImage." class='rounded' style='height: 25px'></td>
                                     <td>$user_online<a href='".SITE_URL."Profile/{$member_username}'> {$member_username}</a></td>
-                                    <td>{$member_firstName}</td>
+                                    <td class='d-none d-md-table-cell'>{$member_firstName}</td>
                                     <td><div class='float-right'><a href='".SITE_URL."Profile/{$member_username}' class='btn btn-sm btn-primary'>View Profile</a> <a href='".SITE_URL."Friends/UnFriend/{$member_username}' class='btn btn-sm btn-secondary'>UnFriend</a></div></td>
                                   </tr>";
                         }
