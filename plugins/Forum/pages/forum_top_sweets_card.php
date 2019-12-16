@@ -7,10 +7,7 @@
 * @version 2.1.2 for UAP v.4.3.0
 */
 
-  use Libs\Language;
-  use Libs\TimeDiff;
-  use Libs\CurrentUserData;
-  use Libs\ForumStats;
+  use Helpers\{Language,TimeDiff,CurrentUserData};
 
   if(empty($data['forum_top_sweets_posts'])){ $data['forum_top_sweets_posts'] = ForumStats::forum_top_sweets_posts();}
 
@@ -39,7 +36,7 @@
 
             echo "<ul class='list-group-item'>";
               echo "<strong>";
-              echo "<a href='".DIR."Topic/$f_p_id/' title='$f_p_title' ALT='$f_p_title'>$f_p_title</a>";
+              echo "<a href='".SITE_URL."Forum/Topic/$f_p_id/' title='$f_p_title' ALT='$f_p_title'>$f_p_title</a>";
               echo "</strong>";
 
               //Display total views

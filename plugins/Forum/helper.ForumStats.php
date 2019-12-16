@@ -304,7 +304,7 @@ class ForumStats
               fp.forum_title as forum_title,
               fp.forum_url as forum_url,
               fp.forum_post_id as forum_post_id
-          FROM ".PREFIX."plugin_views v
+          FROM ".PREFIX."views v
           LEFT JOIN ".PREFIX."plugin_forum_posts fp
           ON v.view_id = fp.forum_post_id
           WHERE v.view_location = 'Forum_Topic'
@@ -331,7 +331,7 @@ class ForumStats
               fp.forum_title as forum_title,
               fp.forum_url as forum_url,
               fp.forum_post_id as forum_post_id
-          FROM ".PREFIX."plugin_sweets s
+          FROM ".PREFIX."sweets s
           LEFT JOIN ".PREFIX."plugin_forum_posts fp
           ON s.sweet_id = fp.forum_post_id
           WHERE s.sweet_location = 'Forum_Topic'
