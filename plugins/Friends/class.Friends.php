@@ -4,7 +4,7 @@
 *
 * UserCandy - Friends Plugin
 * @author David (DaVaR) Sargent <davar@usercandy.com>
-* @version 1.0.0
+* @version uc 1.0.3
 */
 
 use Core\Models;
