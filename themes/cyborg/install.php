@@ -1,6 +1,6 @@
 <?php
 /**
-* Widget Installer
+* Theme Installer
 *
 * UserCandy
 * @author David (DaVaR) Sargent <davar@usercandy.com>

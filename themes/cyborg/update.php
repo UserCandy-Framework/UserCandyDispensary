@@ -1,6 +1,6 @@
 <?php
 /**
-* Widget Updater
+* Theme Updater
 *
 * UserCandy
 * @author David (DaVaR) Sargent <davar@usercandy.com>
