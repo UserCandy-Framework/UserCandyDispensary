@@ -1134,7 +1134,7 @@ class Forum extends Models {
         ",
         array(':where_id' => $user_id));
         /** Check if Email Settings are set **/
-        $site_mail_setting = SITEEMAIL;
+        $site_mail_setting = EMAIL_FROM_NAME;
         if(!empty($site_mail_setting)){
           //EMAIL MESSAGE USING PHPMAILER
           $mail = new Helpers\Mail();

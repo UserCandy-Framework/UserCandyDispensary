@@ -376,7 +376,7 @@ class CommentsHelper
           $user_commenter = CurrentUserData::getUserName($com_owner_userid);
           $com_location = str_replace("Sec", "", $com_location);
           /** Check if Email Settings are set **/
-          $site_mail_setting = SITEEMAIL;
+          $site_mail_setting = EMAIL_FROM_NAME;
           if(!empty($site_mail_setting)){
             $mail = new Helpers\Mail();
             $mail->setFrom(SITEEMAIL, EMAIL_FROM_NAME);

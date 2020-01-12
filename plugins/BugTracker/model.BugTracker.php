@@ -106,7 +106,7 @@ class BugTracker extends Models {
 		",
 		array(':where_id' => $bug_data[0]->creator_userID));
 		/** Check if Email Settings are set **/
-		$site_mail_setting = SITEEMAIL;
+		$site_mail_setting = EMAIL_FROM_NAME;
 		if(!empty($site_mail_setting)){
 			/** EMAIL MESSAGE USING PHPMAILER **/
 			$mail = new Helpers\Mail();
@@ -194,7 +194,7 @@ class BugTracker extends Models {
 		",
 		array(':where_id' => $bug_data[0]->assigned_userID));
 		/** Check if Email Settings are set **/
-		$site_mail_setting = SITEEMAIL;
+		$site_mail_setting = EMAIL_FROM_NAME;
 		if(!empty($site_mail_setting)){
 			/** EMAIL MESSAGE USING PHPMAILER **/
 			$mail = new Helpers\Mail();
