@@ -4,7 +4,7 @@
 *
 * UserCandy - Messages Plugin
 * @author David (DaVaR) Sargent <davar@usercandy.com>
-* @version uc 1.0.3
+* @version uc 1.0.4
 */
 
 use Core\Models;
@@ -1133,26 +1133,32 @@ class Forum extends Models {
           LIMIT 1
         ",
         array(':where_id' => $user_id));
-        //EMAIL MESSAGE USING PHPMAILER
-        $mail = new Helpers\Mail();
-        $mail->setFrom(SITEEMAIL, EMAIL_FROM_NAME);
-        $mail->addAddress($email_data[0]->email);
-        $mail_subject = SITE_TITLE . " - Forum - ".$email_from_data[0]->username." replied to {$topic_title}";
-        $mail->subject($mail_subject);
-        $body = "Hello ".$email_data[0]->username."<br/><br/>";
-        $body .= SITE_TITLE . " - Forum Notification<br/>
-                              <br/>
-															Category: $topic_cat<br/>
-															Topic: $topic_title<br/>
-															Reply by: ".$email_from_data[0]->username."<br/>
-                              <br/>
-															Reply Content:<br/>
-															************************<br/>
-															$reply_content<br/>
-															************************<br/>";
-        $body .= "You may check the reply at: <b><a href=\"" . SITE_URL . "/Topic/$id\">" . SITE_TITLE . " Forum - $topic_title</a></b>";
-        $mail->body($body);
-        $mail->send();
+        /** Check if Email Settings are set **/
+        $site_mail_setting = SITEEMAIL;
+        if(!empty($site_mail_setting)){
+          //EMAIL MESSAGE USING PHPMAILER
+          $mail = new Helpers\Mail();
+          $mail->setFrom(SITEEMAIL, EMAIL_FROM_NAME);
+          $mail->addAddress($email_data[0]->email);
+          $mail_subject = SITE_TITLE . " - Forum - ".$email_from_data[0]->username." replied to {$topic_title}";
+          $mail->subject($mail_subject);
+          $body = \Helpers\PageFunctions::displayEmailHeader();
+          $body .= "<h1>Hello ".$email_data[0]->username."</h1>";
+          $body .= SITE_TITLE . " - Forum Notification<br/>
+                                <br/>
+  															Category: $topic_cat<br/>
+  															Topic: $topic_title<br/>
+  															Reply by: ".$email_from_data[0]->username."<br/>
+                                <br/>
+  															Reply Content:<br/>
+  															************************<br/>
+  															$reply_content<br/>
+  															************************<br/>";
+          $body .= "You may check the reply at: <b><a href=\"" . SITE_URL . "/Topic/$id\">" . SITE_TITLE . " Forum - $topic_title</a></b>";
+          $body .= \Helpers\PageFunctions::displayEmailFooter();
+          $mail->body($body);
+          $mail->send();
+        }
       }
     }
 

@@ -4,7 +4,7 @@
 *
 * UserCandy
 * @author David (DaVaR) Sargent <davar@usercandy.com>
-* @version uc 1.0.3
+* @version uc 1.0.4
 *
 * Sample Usage
 *
@@ -375,23 +375,29 @@ class CommentsHelper
         if(!empty($users_in_comments)){
           $user_commenter = CurrentUserData::getUserName($com_owner_userid);
           $com_location = str_replace("Sec", "", $com_location);
-          $mail = new Helpers\Mail();
-          $mail->setFrom(SITEEMAIL, EMAIL_FROM_NAME);
-          foreach($users_in_comments as $row){
-            $mail->addBCC($row);
+          /** Check if Email Settings are set **/
+          $site_mail_setting = SITEEMAIL;
+          if(!empty($site_mail_setting)){
+            $mail = new Helpers\Mail();
+            $mail->setFrom(SITEEMAIL, EMAIL_FROM_NAME);
+            foreach($users_in_comments as $row){
+              $mail->addBCC($row);
+            }
+            $mail_subject = SITE_TITLE . " - New Comment by ".$user_commenter;
+            $mail->subject($mail_subject);
+            $body = \Helpers\PageFunctions::displayEmailHeader();
+            $body .= "<h1>".SITE_TITLE." - Comment Notification </h1>
+                                  <hr/>
+                                  <b>New Comment by ".$user_commenter." to ".$com_location." on ".SITE_TITLE."</b>
+                                  <hr/>
+                                  <b>Comment</b>:<br/>
+                                  ".$com_content."
+                                  <hr/>";
+            $body .= "<a href=\"".SITE_URL.$clean_com_url."/#viewcom".$com_add_data."\">View Comment</a>";
+            $body .= \Helpers\PageFunctions::displayEmailFooter();
+            $mail->body($body);
+            $mail->send();
           }
-          $mail_subject = SITE_TITLE . " - New Comment by ".$user_commenter;
-          $mail->subject($mail_subject);
-          $body = "<b>".SITE_TITLE." - Comment Notification </b>
-                                <hr/>
-                                <b>New Comment by ".$user_commenter." to ".$com_location." on ".SITE_TITLE."</b>
-                                <hr/>
-                                <b>Comment</b>:<br/>
-                                ".$com_content."
-                                <hr/>";
-          $body .= "<a href=\"".SITE_URL.$clean_com_url."/#viewcom".$com_add_data."\">View Comment</a>";
-          $mail->body($body);
-          $mail->send();
         }
         /** Success **/
         SuccessMessages::push('You Have Successfully Submitted a Comment', $clean_com_url."/#viewcom$com_add_data");

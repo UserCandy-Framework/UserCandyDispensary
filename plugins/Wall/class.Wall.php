@@ -4,7 +4,7 @@
 *
 * UserCandy - Wall Plugin
 * @author David (DaVaR) Sargent <davar@usercandy.com>
-* @version uc 1.0.3
+* @version uc 1.0.4
 */
 
 use Core\Models;

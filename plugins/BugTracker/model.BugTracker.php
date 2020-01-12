@@ -4,7 +4,7 @@
 *
 * UserCandy - Demo Plugin
 * @author David (DaVaR) Sargent <davar@usercandy.com>
-* @version uc 1.0.3
+* @version uc 1.0.4
 */
 
 use Core\Models;
@@ -105,30 +105,35 @@ class BugTracker extends Models {
 			LIMIT 1
 		",
 		array(':where_id' => $bug_data[0]->creator_userID));
-		/** EMAIL MESSAGE USING PHPMAILER **/
-		$mail = new Helpers\Mail();
-		$mail->setFrom(SITEEMAIL, EMAIL_FROM_NAME);
-		$mail->addBCC($email_user[0]->email);
-		foreach($email_mods_admins_addy as $row){
-			$mail->addBCC($row[0]->email);
+		/** Check if Email Settings are set **/
+		$site_mail_setting = SITEEMAIL;
+		if(!empty($site_mail_setting)){
+			/** EMAIL MESSAGE USING PHPMAILER **/
+			$mail = new Helpers\Mail();
+			$mail->setFrom(SITEEMAIL, EMAIL_FROM_NAME);
+			$mail->addBCC($email_user[0]->email);
+			foreach($email_mods_admins_addy as $row){
+				$mail->addBCC($row[0]->email);
+			}
+			$mail_subject = SITE_TITLE . " - BugTracker New - ".$bug_data[0]->summary;
+			$mail->subject($mail_subject);
+			$body = \Helpers\PageFunctions::displayEmailHeader();
+			$body .= "<h1>".SITE_TITLE." - BugTracker Notification </h1>
+														<hr/>
+														<b>New Bug submitted by ".$creator[0]->username." to BugTracker on ".SITE_TITLE."</b>
+														<hr/>
+														<b>Summary</b>: ".$bug_data[0]->summary."<br/>
+														<b>Package</b>: ".$bug_data[0]->version."<br/>
+														<b>Version</b>: ".$bug_data[0]->version."<br/>
+														<b>Server Information</b>: ".$bug_data[0]->server."<br/>
+														<b>Type</b>: ".$bug_type."<br/>
+														<b>Folder Location</b>: ".$bug_data[0]->folder."<br/>
+														<hr/>";
+			$body .= "You may view bug details at: <a href=\"".SITE_URL."BugTracker/View/".$bug_id."\">View ".$bug_data[0]->id."</a>";
+			$body .= \Helpers\PageFunctions::displayEmailFooter();
+			$mail->body($body);
+			$mail->send();
 		}
-		$mail_subject = SITE_TITLE . " - BugTracker New - ".$bug_data[0]->summary;
-		$mail->subject($mail_subject);
-		$body = "<b>".SITE_TITLE." - BugTracker Notification </b>
-													<hr/>
-													<b>New Bug submitted by ".$creator[0]->username." to BugTracker on ".SITE_TITLE."</b>
-													<hr/>
-													<b>Summary</b>: ".$bug_data[0]->summary."<br/>
-													<b>Package</b>: ".$bug_data[0]->version."<br/>
-													<b>Version</b>: ".$bug_data[0]->version."<br/>
-													<b>Server Information</b>: ".$bug_data[0]->server."<br/>
-													<b>Type</b>: ".$bug_type."<br/>
-													<b>Folder Location</b>: ".$bug_data[0]->folder."<br/>
-													<hr/>";
-		$body .= "You may view bug details at: <a href=\"".SITE_URL."BugTracker/View/".$bug_id."\">View ".$bug_data[0]->id."</a>";
-		$mail->body($body);
-		$mail->send();
-
 		return true;
 	}
 
@@ -188,34 +193,39 @@ class BugTracker extends Models {
 			LIMIT 1
 		",
 		array(':where_id' => $bug_data[0]->assigned_userID));
-		/** EMAIL MESSAGE USING PHPMAILER **/
-		$mail = new Helpers\Mail();
-		$mail->setFrom(SITEEMAIL, EMAIL_FROM_NAME);
-		$mail->addBCC($email_user[0]->email);
-		foreach($email_mods_admins_addy as $row){
-			$mail->addBCC($row[0]->email);
+		/** Check if Email Settings are set **/
+		$site_mail_setting = SITEEMAIL;
+		if(!empty($site_mail_setting)){
+			/** EMAIL MESSAGE USING PHPMAILER **/
+			$mail = new Helpers\Mail();
+			$mail->setFrom(SITEEMAIL, EMAIL_FROM_NAME);
+			$mail->addBCC($email_user[0]->email);
+			foreach($email_mods_admins_addy as $row){
+				$mail->addBCC($row[0]->email);
+			}
+			$mail->addBCC($assigned[0]->email);
+			$mail_subject = SITE_TITLE . " - BugTracker Update - ".$bug_data[0]->summary;
+			$mail->subject($mail_subject);
+			$body = \Helpers\PageFunctions::displayEmailHeader();
+			$body .= "<h1>".SITE_TITLE." - BugTracker Notification </h1>
+														<hr/>
+														<b>Bug update submitted by ".$updater[0]->username." to BugTracker on ".SITE_TITLE."</b>
+														<hr/>
+														<b>Summary</b>: ".$bug_data[0]->summary."<br/>
+														<b>Package</b>: ".$bug_data[0]->version."<br/>
+														<b>Version</b>: ".$bug_data[0]->version."<br/>
+														<b>Server Information</b>: ".$bug_data[0]->server."<br/>
+														<b>Type</b>: ".$bug_type."<br/>
+														<b>Folder Location</b>: ".$bug_data[0]->folder."<hr/>
+														<b>Status</b>: ".$bug_data[0]->status."<br/>
+														<b>Priority</b>: ".$bug_data[0]->priority."<br/>
+														<b>Assigned User</b>: ".$assigned[0]->username."<br/>
+														<hr/>";
+			$body .= "You may view bug details at: <a href=\"".SITE_URL."BugTracker/View/".$bug_id."\">View ".$bug_data[0]->id."</a>";
+			$body .= \Helpers\PageFunctions::displayEmailFooter();
+			$mail->body($body);
+			$mail->send();
 		}
-		$mail->addBCC($assigned[0]->email);
-		$mail_subject = SITE_TITLE . " - BugTracker Update - ".$bug_data[0]->summary;
-		$mail->subject($mail_subject);
-		$body = "<b>".SITE_TITLE." - BugTracker Notification </b>
-													<hr/>
-													<b>Bug update submitted by ".$updater[0]->username." to BugTracker on ".SITE_TITLE."</b>
-													<hr/>
-													<b>Summary</b>: ".$bug_data[0]->summary."<br/>
-													<b>Package</b>: ".$bug_data[0]->version."<br/>
-													<b>Version</b>: ".$bug_data[0]->version."<br/>
-													<b>Server Information</b>: ".$bug_data[0]->server."<br/>
-													<b>Type</b>: ".$bug_type."<br/>
-													<b>Folder Location</b>: ".$bug_data[0]->folder."<hr/>
-													<b>Status</b>: ".$bug_data[0]->status."<br/>
-													<b>Priority</b>: ".$bug_data[0]->priority."<br/>
-													<b>Assigned User</b>: ".$assigned[0]->username."<br/>
-													<hr/>";
-		$body .= "You may view bug details at: <a href=\"".SITE_URL."BugTracker/View/".$bug_id."\">View ".$bug_data[0]->id."</a>";
-		$mail->body($body);
-		$mail->send();
-
 		return true;
 	}
 

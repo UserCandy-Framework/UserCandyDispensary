@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DOCUMENT>
+  <!-- Title of the Helper -->
+  <TITLE>Downloads Helper</TITLE>
+  <!-- Small Description of the Helper - What does it do? -->
+  <DESCRIPTION>Downloads Helper for listing and logging downloads.</DESCRIPTION>
+  <!-- Name of Helper - This is how it is stored in the DB - No spaces or special characters -->
+  <NAME>Downloads</NAME>
+  <!-- Let UserCany Dispenser know that this is a Helper - Must be lowercase -->
+  <TYPE>helper</TYPE>
+  <!-- Folder name where the Helper is located - Normally same as Name -->
+  <FOLDER_LOCATION>Downloads</FOLDER_LOCATION>
+  <!-- Let everyone know who created this Helper -->
+  <AUTHOR>DaVaR</AUTHOR>
+  <!-- Current Release Version of this Helper - Used to let others know when to update -->
+  <VERSION>1.0.0</VERSION>
+  <!-- Current Version of UserCandy this item works with -->
+  <UCVERSION>1.0.3</UCVERSION>
+  <!-- Current Release Date of this Helper -->
+  <RELEASE_DATE>12/19/2019</RELEASE_DATE>
+  <!-- Helper Image URL to display with the Helper in the Dispenser -->
+  <IMAGE>https://www.usercandy.com/assets/images/dispensary-pics/helper-downloads.png</IMAGE>
+</DOCUMENT>

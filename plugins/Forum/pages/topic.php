@@ -349,7 +349,7 @@ if(isset($_POST['forum_topic_reply_autosave'])){
   $data['csrf_token'] = Csrf::makeToken('forum');
 
   /* Add Java Stuffs */
-  $js .= "<script src='".Url::templatePath()."js/forum_autosave_topic_reply.js'></script>";
+  $js .= "<script src='".Url::customPath('plugins', 'Forum')."js/forum_autosave_topic_reply.js'></script>";
 
 ?>
 

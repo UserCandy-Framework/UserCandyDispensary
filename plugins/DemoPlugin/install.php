@@ -12,6 +12,7 @@ $install_db_data[] = "
 CREATE TABLE IF NOT EXISTS `".PREFIX."plugin_demo` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `demo_version` varchar(255) NOT NULL DEFAULT '0',
+  `notes` TEXT,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
