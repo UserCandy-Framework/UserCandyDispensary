@@ -43,11 +43,6 @@ define('IMG_DIR_FORUM_TOPIC', 'assets/images/forum-pics/topics/');
 // Forum Topic Replies Image Directory
 define('IMG_DIR_FORUM_REPLY', 'assets/images/forum-pics/replies/');
 
-/** Check to see if we need to hide the sidebar **/
-if($_POST['hide_head_foot'] != "true"){
-  /** Include the Sidebar **/
-  require($plugin_dir.'pages/forum_sidebar.php');
-}
 /** Get the Plugin Page and Display it **/
 if($get_var_1 == 'Topics'){
   /** Include the Messages List File **/
@@ -64,6 +59,12 @@ if($get_var_1 == 'Topics'){
 }else{
   /** Include the Messages Home File **/
   require($plugin_dir.'pages/forum_home.php');
+}
+
+/** Check to see if we need to hide the sidebar **/
+if($_POST['hide_head_foot'] != "true"){
+  /** Include the Sidebar **/
+  require($plugin_dir.'pages/forum_sidebar.php');
 }
 
 ?>

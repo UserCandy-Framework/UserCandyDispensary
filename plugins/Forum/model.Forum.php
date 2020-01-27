@@ -265,6 +265,22 @@ class Forum extends Models {
     }
 
     /**
+     * get Topic URL based on ID request
+     * @param string $topic_id
+     * @return int data
+     */
+    public function get_topic_url_from_id($topic_id){
+      $data = $this->db->select("
+        SELECT forum_url
+        FROM ".PREFIX."plugin_forum_posts
+        WHERE forum_post_id = :forum_post_id
+        LIMIT 1
+      ",
+      array(':forum_post_id' => $topic_id));
+      return $data[0]->forum_url;
+    }
+
+    /**
      * get Topic ID based on URL request
      * @param string $forum_url
      * @param int $id

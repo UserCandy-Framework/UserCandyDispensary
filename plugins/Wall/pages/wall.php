@@ -62,7 +62,7 @@ use Helpers\{Csrf,Request,SuccessMessages,ErrorMessages,Form,Url,BBCode,CurrentU
 
 ?>
 
-<div class="col">
+<div class="col-auto">
     <div class='card mb-3'>
       <div class='card-header h4'>
         Status Update
@@ -307,8 +307,10 @@ use Helpers\{Csrf,Request,SuccessMessages,ErrorMessages,Form,Url,BBCode,CurrentU
                 echo "</a>";
                 echo " $online_check <a href='".SITE_URL."Profile/{$recent_userName}'>$recent_userName</a> is feeling $recent->RP_03..";
               echo "</div>";
-              echo "<div class='card-body forum' style='overflow: hidden; height: auto;'>";
+              echo "<div class='card-body'>";
+                echo "<div class='forum'>";
                 echo $status_content;
+                echo "</div>";
               echo "</div>";
               echo "<div class='card-footer'>";
                 echo "<div class='row'><div class='col-12'>";

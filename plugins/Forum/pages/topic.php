@@ -115,8 +115,8 @@ if(isset($_POST['forum_topic_reply_autosave'])){
     // Check to make sure the csrf token is good
     if (Csrf::isTokenValid('forum')) {
       /** Token Good **/
-      $data['fpr_content'] = htmlspecialchars(Request::post('fpr_content'));
-      $data['fpr_post_id'] = htmlspecialchars(Request::post('fpr_post_id'));
+      $data['fpr_content'] = Request::post('fpr_content');
+      $data['fpr_post_id'] = Request::post('fpr_post_id');
       if(!empty($data['fpr_post_id'])){
         $update_topic = $model->updateSavedTopicReply($data['fpr_post_id'], $data['fpr_content'], $u_id);
         echo $data['fpr_post_id'];
@@ -138,7 +138,7 @@ if(isset($_POST['forum_topic_reply_autosave'])){
       // Check to see if user is editing topic
       if($data['action'] == "update_topic"){
         // Get data from post
-        $data['forum_content'] = htmlspecialchars(Request::post('forum_content'));
+        $data['forum_content'] = Request::post('forum_content');
         $data['forum_title'] = strip_tags(Request::post('forum_title'));
           // Check to make sure user completed all required fields in form
           if(empty($data['forum_title'])){
@@ -170,7 +170,7 @@ if(isset($_POST['forum_topic_reply_autosave'])){
       // Check to see if user is editing or creating topic reply
       else if($data['action'] == "update_reply"){
         // Get data from post
-        $data['fpr_content'] = htmlspecialchars(Request::post('fpr_content'));
+        $data['fpr_content'] = Request::post('fpr_content');
           // Check to make sure user completed all required fields in form
           if(empty($data['fpr_content'])){
             // Subject field is empty
@@ -196,7 +196,7 @@ if(isset($_POST['forum_topic_reply_autosave'])){
       }else if($data['action'] == "new_reply"){
         // Get data from post
         $afpr_post_id = strip_tags(Request::post('fpr_post_id'));
-        $data['fpr_content'] = htmlspecialchars(Request::post('fpr_content'));
+        $data['fpr_content'] = Request::post('fpr_content');
           // Check to make sure user completed all required fields in form
           if(empty($data['fpr_content'])){
             // Subject field is empty
@@ -481,7 +481,7 @@ if(isset($_POST['forum_topic_reply_autosave'])){
               echo Form::close();
             }else{
               // Display Topic Content
-    				  echo "<span class='forum'>".$data_topic_content."</span>";
+    				  echo "<div class='forum'>".$data_topic_content."</div>";
               echo "<br><br>";
               // Get user's Signature
               $user_signature = CurrentUserData::getUserSignature($data['topic_creator']);
@@ -656,7 +656,7 @@ if(isset($_POST['forum_topic_reply_autosave'])){
                     echo Form::close();
                   }else{
                     // Display Topic Reply Content
-    							  echo "<span class='forum'>".$rf_p_content_bb."</span>";
+    							  echo "<div class='forum'>".$rf_p_content_bb."</div>";
                     echo "<Br><br>";
                     // Get user's Signature
                     $user_signature = CurrentUserData::getUserSignature($rf_p_user_id);

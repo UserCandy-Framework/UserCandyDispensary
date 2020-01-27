@@ -222,7 +222,7 @@ if(isset($_POST['forum_topic_autosave'])){
                   </div>
                   <div class="custom-file">
                     <input type="file" class="custom-file-input" accept="image/jpeg, image/gif, image/x-png" id="forumImage" name="forumImage[]" aria-describedby="inputGroupFileAddon01" multiple="multiple">
-                    <label class="custom-file-label" for="inputGroupFile01">Select Image File</label>
+                    <label class="custom-file-label" for="forumImage">Select Image Files</label>
                   </div>
                 </div>
             <?php } ?>

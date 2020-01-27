@@ -99,11 +99,12 @@ foreach($data['forum_recent_posts'] as $row_rp)
   }else{
     $rp_user_name2 = CurrentUserData::getUserName($rp_user_id2);
     $online_check2 = CurrentUserData::getUserStatusDot($rp_user_id2);
+    $get_topic_url = $model->get_topic_url_from_id($f_p_id);
     //If reply show the following
     echo "<ul class='list-group-item'>";
     echo " $online_check2 <a href='".SITE_URL."Profile/$rp_user_id2'>$rp_user_name2</a> posted on.. <br>";
     echo "<strong>";
-    echo "<a href='".SITE_URL."Forum/Topic/$f_p_id/' title='$f_p_title' ALT='$f_p_title'>$f_p_title</a>";
+    echo "<a href='".SITE_URL."Forum/Topic/$get_topic_url/' title='$f_p_title' ALT='$f_p_title'>$f_p_title</a>";
     echo "</strong>";
     //Display how long ago this was posted
     $timestart = $rp_timestamp2;  //Time of post
