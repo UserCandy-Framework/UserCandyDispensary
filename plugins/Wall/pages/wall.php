@@ -60,9 +60,19 @@ use Helpers\{Csrf,Request,SuccessMessages,ErrorMessages,Form,Url,BBCode,CurrentU
   /* Add Java Stuffs */
   $data['js'] = "<script src='".Url::templatePath()."js/bbcode_status.js'></script>";
 
+
+  /** Set the width of the col based on if Friends and Forum plugins being installed. **/
+  if($DispenserModel->checkDispenserEnabled('Friends') && $DispenserModel->checkDispenserEnabled('Forum')){
+    echo "<div class='col-lg-6 col-md-4'>";
+  }else if($DispenserModel->checkDispenserEnabled('Friends')){
+    echo "<div class='col-lg-9 col-md-8'>";
+  }else if($DispenserModel->checkDispenserEnabled('Forum')){
+    echo "<div class='col-lg-9 col-md-8'>";
+  }else{
+    echo "<div class='col-lg-12 col-md-12'>";
+  }
 ?>
 
-<div class="col-auto">
     <div class='card mb-3'>
       <div class='card-header h4'>
         Status Update

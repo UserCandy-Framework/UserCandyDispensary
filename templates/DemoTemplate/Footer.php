@@ -78,6 +78,13 @@ Core\Extender::load_ext('defaultFooter', 'top');
             });
         </script>
 
+        <script>
+          $('.custom-file-input').on('change', function() {
+            var fileName = $(this).val().split('\\').pop();
+            $(this).siblings('.custom-file-label').addClass('selected').html(fileName);
+          });
+        </script>
+
         <?php
         /* Load Bottom Extender for Footer */
         Core\Extender::load_ext('defaultFooter', 'bottom');

@@ -82,7 +82,8 @@ $data['csrf_token'] = Csrf::makeToken('forum');
 							</div>
 						</div>
 					</div>
-									<table class='table table-hover'>
+
+					<table class='table table-hover'>
 				";
 
         foreach($data['forum_topics'] as $row2)
@@ -237,12 +238,17 @@ $data['csrf_token'] = Csrf::makeToken('forum');
 
             echo "</table>";
 
+
+
             // Display Create New Topic Button if user is logged in
             if($data['isLoggedIn'] && $group_forum_perms_post == true){
               echo "<a class='btn btn-sm btn-success' href='".SITE_URL."Forum/NewTopic/".$data['current_topic_id']."'>";
                 echo "Create New Topic";
               echo "</a><br><br>";
             }
+
+    echo "</div>";
+  echo "</div>";
 
             // Display Paginator Links
             // Check to see if there is more than one page
@@ -255,8 +261,7 @@ $data['csrf_token'] = Csrf::makeToken('forum');
             }
 
 				?>
-		</div>
-	</div>
+
 
     <?php
         /* Get Forum Permissions Data */

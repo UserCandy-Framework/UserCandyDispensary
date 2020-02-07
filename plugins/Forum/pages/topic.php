@@ -374,6 +374,9 @@ if(isset($_POST['forum_topic_reply_autosave'])){
        ?>
 		</div>
 		<div class='card-body'>
+
+
+
 			<?php
       // Check to see if topic is allowed
       if($data['topic_allow'] == "TRUE"){
@@ -391,7 +394,7 @@ if(isset($_POST['forum_topic_reply_autosave'])){
         echo "<div class='btn btn-success btn-sm'> Images <span class='badge badge-light'>";
           echo $model->getImageCountForum('Topic', $data['topic_id']);
         echo "</span></div>";
-        echo "<hr>";
+echo "</div></div>";
 
         // Topic Display
     		echo "<div class='card border-primary mb-3'>";
@@ -747,6 +750,10 @@ if(isset($_POST['forum_topic_reply_autosave'])){
 
       	}
 
+
+  echo "<div class='card mb-3'>";
+		echo "<div class='card-body'>";
+
         // Display Locked Message if Topic has been locked by admin
         if($data['topic_status'] == 2){
           echo " <strong><font color='red'>Topic Locked - Replies are Disabled</font></strong> ";
@@ -756,7 +763,6 @@ if(isset($_POST['forum_topic_reply_autosave'])){
           // Display Create New Topic Reply Button if user is logged in
           if($data['isLoggedIn'] && $group_forum_perms_post){
 ?>
-            <hr>
             <?php echo Form::open(array('method' => 'post',  'files' => '')); ?>
 
             <!-- BBCode Buttons -->
@@ -800,10 +806,12 @@ if(isset($_POST['forum_topic_reply_autosave'])){
             <?php echo Form::close(); ?>
             <div id="autoSave"></div>
             <div id="fpr_post_id"></div>
-            <hr>
 <?php
           }
         }
+
+    echo "</div>";
+  echo "</div>";
 
         // Display Paginator Links
         // Check to see if there is more than one page
@@ -814,6 +822,9 @@ if(isset($_POST['forum_topic_reply_autosave'])){
             echo "</div>";
           echo "</div>";
         }
+
+  echo "<div class='card mb-3'>";
+		echo "<div class='card-body'>";
 
         // Check to see if user is logged in
         if($data['current_userID']){
@@ -841,7 +852,6 @@ if(isset($_POST['forum_topic_reply_autosave'])){
         // Display Admin Lock/UnLock Button
         // Check if Admin
         if($group_forum_perms_mod == true || $group_forum_perms_admin == true){
-          echo "<br>";
           echo Form::open(array('method' => 'post'));
             if($data['topic_status'] == 2){
               // UnLock Button
@@ -881,9 +891,12 @@ if(isset($_POST['forum_topic_reply_autosave'])){
         echo "<input type='hidden' name='token_forum' value='".$data['csrf_token']."' />";
         echo Form::close();
       }
+
+    echo "</div>";
+  echo "</div>";
 				?>
-		</div>
-	</div>
+
+
 
     <?php
         /* Get Forum Permissions Data */
