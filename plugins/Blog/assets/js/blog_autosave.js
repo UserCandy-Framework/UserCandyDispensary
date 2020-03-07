@@ -29,7 +29,7 @@ $(document).ready(function(){
   if(blog_title != '' || blog_content != ''){
    // AJAX request
    $.ajax({
-    url: '../BlogAutoSave',
+    url: '/BlogAutoSave',
     type: 'post',
     data: {id:id,blog_title:blog_title,blog_content:blog_content,blog_category:blog_category,blog_description:blog_description,blog_keywords:blog_keywords,token_blog:token_blog,blog_autosave:blog_autosave},
     success: function(data){

@@ -174,7 +174,7 @@ use Helpers\{ErrorMessages,SuccessMessages,Form,Request,CurrentUserData,BBCode};
             <?php
               /** Check to see if current user owns this blog **/
               if($data['currentUserData'][0]->userID == $data['blog_data'][0]->blog_owner_id){
-                echo "<a class='btn btn-sm btn-warning' href='".SITE_URL."CreateBlog/".$data['blog_data'][0]->id."/'>Edit Blog</a> ";
+                echo "<a class='btn btn-sm btn-warning' href='".SITE_URL."Blog/CreateBlog/".$data['blog_data'][0]->id."/'>Edit Blog</a> ";
               }
               if($DispenserModel->checkDispenserEnabled('Sweets')){
                 /** Display Total Views **/
@@ -189,7 +189,7 @@ use Helpers\{ErrorMessages,SuccessMessages,Form,Request,CurrentUserData,BBCode};
                 /** Start Comments **/
                 echo CommentsHelper::getTotalComments($data['blog_data'][0]->id, 'blog', $data['blog_data'][0]->blog_owner_id);
                 echo "<div class='col-12 p-0'>";
-                  echo CommentsHelper::displayComments($data['blog_data'][0]->id, 'blog', $data['currentUserData'][0]->userID, 0, 'Blog/'.$data['blog_data'][0]->id.'/', null, 'view_comments');
+                  echo CommentsHelper::displayComments($data['blog_data'][0]->id, 'blog', 'Blog/'.$data['blog_data'][0]->id.'/');
                 echo "</div>";
               }
             ?>

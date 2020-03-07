@@ -1,10 +1,10 @@
 <?php
 /**
-* UserCandy Demo Models Plugin
+* UserCandy Blog Models Plugin
 *
-* UserCandy - Demo Plugin
+* UserCandy - Blog Plugin
 * @author David (DaVaR) Sargent <davar@usercandy.com>
-* @version uc 1.0.4
+* @version 1.0.0
 */
 
 use Core\Models;
@@ -362,15 +362,9 @@ class Blog extends Models {
   }
 
   /**
-   * updateTopic
+   * updateBlog
    *
-   * edit/update topic
-   *
-   * @param int $id Current Topic's ID
-   * @param string $blog_title Topic's title
-   * @param string $blog_content Topic's content
-   *
-   * @return booleen true/false
+   * edit/update Blog
    */
   public function updateBlog($id, $blog_title, $blog_content, $blog_description, $blog_category, $blog_keywords){
     /** Generate URL based on title **/
@@ -381,7 +375,7 @@ class Blog extends Models {
     }
     /** Update the Blog Post **/
     $query = $this->db->update(PREFIX.'plugin_blog', array('blog_title' => $blog_title, 'blog_content' => $blog_content, 'blog_description' => $blog_description, 'blog_category' => $blog_category, 'blog_keywords' => $blog_keywords, 'blog_url' => $blog_url, 'blog_publish' => '1', 'edit_timestamp' => date('Y-m-d H:i:s')), array('id' => $id));
-    // Check to make sure Topic was Created
+    // Check to make sure Blog was Created
     if($query > 0){
       return true;
     }else{
@@ -390,15 +384,9 @@ class Blog extends Models {
   }
 
   /**
-   * updateSavedTopic
+   * updateSavedBlog
    *
-   * edit/update saved topic
-   *
-   * @param int $id Current Topic's ID
-   * @param string $blog_title Topic's title
-   * @param string $blog_content Topic's content
-   *
-   * @return booleen true/false
+   * edit/update saved Blog
    */
   public function updateSavedBlog($id, $blog_title, $blog_content, $blog_description, $blog_category, $blog_keywords, $blog_publish = "0"){
     /** Generate URL based on title **/
@@ -410,7 +398,7 @@ class Blog extends Models {
     }
     // Update blog table
     $query = $this->db->update(PREFIX.'plugin_blog', array('blog_title' => $blog_title, 'blog_content' => $blog_content, 'blog_description' => $blog_description, 'blog_category' => $blog_category, 'blog_keywords' => $blog_keywords, 'blog_url' => $blog_url, 'blog_publish' => $blog_publish, 'timestamp' => date('Y-m-d H:i:s')), array('id' => $id));
-    // Check to make sure Topic was Created
+    // Check to make sure Blog was Created
     if($query > 0){
       return true;
     }else{

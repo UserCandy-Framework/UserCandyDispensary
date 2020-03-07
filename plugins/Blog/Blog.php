@@ -70,6 +70,12 @@ if(empty($view_page) || $view_page == 'All'){
    ErrorMessages::push(Language::show('user_not_logged_in', 'Auth'), 'Login');
   /** Include the Messages Home File **/
   require($plugin_dir.'pages/edit_blog.php');
+}else if($view_page == 'EditBlogImages'){
+  /** If User Not logged in - kick them out **/
+  if (!$auth->isLogged())
+   ErrorMessages::push(Language::show('user_not_logged_in', 'Auth'), 'Login');
+  /** Include the Edit Blog Images file **/
+  require($plugin_dir.'pages/edit_blog_images.php');
 }else{
   $blog_id = $view_page;
   /** Include the Messages Home File **/

@@ -1,0 +1,1 @@
+<a href="https://seal.beyondsecurity.com/vulnerability-scanner-verification/demo.usercandy.com"><img src="https://seal.beyondsecurity.com/verification-images/demo.usercandy.com/vulnerability-scanner-2.gif" alt="Website Security Test" border="0"></a>

@@ -4,13 +4,24 @@
 *
 * UserApplePie - Blog Plugin
 * @author David (DaVaR) Sargent <davar@userapplepie.com>
-* @version 1.0.0 for UAP v.4.3.0
+* @version 1.0.0
 */
 
 /** Blog Display Page View **/
 
 use Core\Language;
 use Helpers\{ErrorMessages,SuccessMessages,Form,Request,CurrentUserData,BBCode,Csrf,Url};
+
+/** Check to see if blog is selected for edit **/
+if(!empty($blog_id) || !empty($_POST['id'])){
+  $check_blog_id = empty($_POST['id']) ? $blog_id : Request::post('id');
+  $blog_data = $BlogModel->getBlogDataEdit($check_blog_id);
+  /** Check to see if user owns selected blog **/
+  if($blog_data[0]->blog_owner_id != $auth->currentSessionInfo()['uid']){
+    /** Blog does not belong to current user - Kick them out **/
+    ErrorMessages::push('You do not own the selected Blog!', 'Blog');
+  }
+}
 
   $get_userName = CurrentUserData::getUserName($blog_data[0]->blog_owner_id);
   $get_userImage = CurrentUserData::getUserImage($blog_data[0]->blog_owner_id);
@@ -26,28 +37,18 @@ if(!empty($blog_id)){
 }
 $data['site_description'] = 'Welcome to your new Blog editor.';
 
-/** Check to see if blog is selected for edit **/
-if(!empty($blog_id)){
-  $data['blog_data'] = $BlogModel->getBlogDataEdit($blog_id);
-  /** Check to see if user owns selected blog **/
-  if($data['blog_data'][0]->blog_owner_id != $auth->currentSessionInfo()['uid']){
-    /** Blog does not belong to current user - Kick them out **/
-    ErrorMessages::push('You do not own the selected Blog!', 'Blog');
-  }
-}
-
-// Check for topic reply autosave
+// Check for blog autosave
 if(isset($_POST['blog_autosave'])){
   if($_POST['blog_autosave'] == "blog_autosave"){
-    /** Forum Auto Save **/
+    /** Blog Auto Save **/
     // Check to make sure the csrf token is good
     if (Csrf::isTokenValid('blog')) {
       /** Token Good **/
-      $data['blog_title'] = htmlspecialchars(Request::post('blog_title'));
-      $data['blog_content'] = htmlspecialchars(Request::post('blog_content'));
-      $data['blog_category'] = htmlspecialchars(Request::post('blog_category'));
-      $data['blog_description'] = htmlspecialchars(Request::post('blog_description'));
-      $data['blog_keywords'] = htmlspecialchars(Request::post('blog_keywords'));
+      $data['blog_title'] = Request::post('blog_title');
+      $data['blog_content'] = Request::post('blog_content');
+      $data['blog_category'] = Request::post('blog_category');
+      $data['blog_description'] = Request::post('blog_description');
+      $data['blog_keywords'] = Request::post('blog_keywords');
       if(!empty($blog_id)){
         $data['id'] = $blog_id;
       }else{
@@ -70,18 +71,21 @@ if(isset($_POST['blog_autosave'])){
     /** Check to make sure the csrf token is good **/
     if (Csrf::isTokenValid('blog')) {
       /** Token Good - Send Data to the Database **/
-      $data['blog_title'] = htmlspecialchars(Request::post('blog_title'));
-      $data['blog_content'] = htmlspecialchars(Request::post('blog_content'));
-      $data['blog_category'] = htmlspecialchars(Request::post('blog_category'));
-      $data['blog_description'] = htmlspecialchars(Request::post('blog_description'));
-      $data['blog_keywords'] = htmlspecialchars(Request::post('blog_keywords'));
+      $data['blog_title'] = Request::post('blog_title');
+      $data['blog_content'] = Request::post('blog_content');
+      $data['blog_category'] = Request::post('blog_category');
+      $data['blog_description'] = Request::post('blog_description');
+      $data['blog_keywords'] = Request::post('blog_keywords');
       $data['id'] = Request::post('id');
+      /** Update the Selected Blog Data **/
       if($BlogModel->updateBlog($data['id'], $data['blog_title'], $data['blog_content'], $data['blog_description'], $data['blog_category'], $data['blog_keywords'], $auth->currentSessionInfo()['uid'])){
         /** Success Message **/
         SuccessMessages::push('You Have Successfully Published/Updated Your Blog', 'Blog/'.$data['id']);
       }
     }
   }
+
+  $data['id'] = empty($data['id']) ? $data['blog_id'] : $data['id'];
 
   /** Create Token **/
   $data['csrf_token'] = Csrf::makeToken('blog');
@@ -107,7 +111,7 @@ if(isset($_POST['blog_autosave'])){
               <div class="input-group-prepend">
                 <span class='input-group-text'><i class='fas fa-fw fa-book'></i> Title</span>
               </div>
-              <?php echo Form::input(array('type' => 'text', 'id' => 'blog_title', 'name' => 'blog_title', 'class' => 'form-control', 'value' => $data['blog_data'][0]->blog_title, 'placeholder' => 'Blog Title', 'maxlength' => '255')); ?>
+              <?php echo Form::input(array('type' => 'text', 'id' => 'blog_title', 'name' => 'blog_title', 'class' => 'form-control', 'value' => $blog_data[0]->blog_title, 'placeholder' => 'Blog Title', 'maxlength' => '255')); ?>
             </div>
 
             <!-- Blog Description -->
@@ -115,7 +119,7 @@ if(isset($_POST['blog_autosave'])){
               <div class="input-group-prepend">
                 <span class='input-group-text'><i class='fas fa-fw fa-book'></i> Description</span>
               </div>
-              <?php echo Form::input(array('type' => 'text', 'id' => 'blog_description', 'name' => 'blog_description', 'class' => 'form-control', 'value' => $data['blog_data'][0]->blog_description, 'placeholder' => 'Blog Description', 'maxlength' => '255')); ?>
+              <?php echo Form::input(array('type' => 'text', 'id' => 'blog_description', 'name' => 'blog_description', 'class' => 'form-control', 'value' => $blog_data[0]->blog_description, 'placeholder' => 'Blog Description', 'maxlength' => '255')); ?>
             </div>
 
             <!-- Blog Category -->
@@ -128,7 +132,7 @@ if(isset($_POST['blog_autosave'])){
                   if(!empty($data['blog_categories'])){
                     foreach ($data['blog_categories'] as $key => $value) {
                       echo "<option value='".$value->id."'";
-                      if($data['blog_data'][0]->blog_category == $value->id){echo " SELECTED ";}
+                      if($blog_data[0]->blog_category == $value->id){echo " SELECTED ";}
                       echo ">".$value->title."</option>";
                     }
                   }
@@ -154,7 +158,7 @@ if(isset($_POST['blog_autosave'])){
                   </div>
                 </span>
               </div>
-              <?php echo Form::textBox(array('type' => 'text', 'id' => 'blog_content', 'name' => 'blog_content', 'class' => 'form-control', 'value' => $data['blog_data'][0]->blog_content, 'placeholder' => 'Blog Content', 'rows' => '20')); ?>
+              <?php echo Form::textBox(array('type' => 'text', 'id' => 'blog_content', 'name' => 'blog_content', 'class' => 'form-control', 'value' => $blog_data[0]->blog_content, 'placeholder' => 'Blog Content', 'rows' => '20')); ?>
             </div>
 
             <!-- Blog Keywords -->
@@ -162,7 +166,7 @@ if(isset($_POST['blog_autosave'])){
               <div class="input-group-prepend">
                 <span class='input-group-text'><i class='fas fa-fw fa-book'></i> Keywords</span>
               </div>
-              <?php echo Form::input(array('type' => 'text', 'id' => 'blog_keywords', 'name' => 'blog_keywords', 'class' => 'form-control', 'value' => $data['blog_data'][0]->blog_keywords, 'placeholder' => 'Blog Keywords', 'maxlength' => '255')); ?>
+              <?php echo Form::input(array('type' => 'text', 'id' => 'blog_keywords', 'name' => 'blog_keywords', 'class' => 'form-control', 'value' => $blog_data[0]->blog_keywords, 'placeholder' => 'Blog Keywords', 'maxlength' => '255')); ?>
             </div>
 
             <!-- CSRF Token -->
@@ -170,7 +174,7 @@ if(isset($_POST['blog_autosave'])){
             <input type="hidden" id="id" name="id" value="<?php echo $data['id']; ?>" />
             <button class="btn btn-md btn-success" name="submit" type="submit" id="submit">
               <?php
-                if($data['blog_data'][0]->blog_publish > 0){
+                if($blog_data[0]->blog_publish > 0){
                   echo "Update Blog";
                 }else{
                   echo "Publish Blog";
@@ -179,7 +183,7 @@ if(isset($_POST['blog_autosave'])){
             </button>
             <?php
               if(!empty($data['blog_id'])){
-                echo " <a class='btn btn-sm btn-success float-right' href='".SITE_URL."EditBlogImages/".$data['blog_id']."/'>Edit Images</a> ";
+                echo " <a class='btn btn-sm btn-success float-right' href='".SITE_URL."Blog/EditBlogImages/".$data['blog_id']."/'>Edit Images</a> ";
               }
             ?>
             <!-- Close Form -->
